@@ -19,7 +19,7 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// </summary>
         /// <returns></returns>
         [Key]
-        public string id = Guid.NewGuid ().ToString ();
+        public string id { get; set; } = Guid.NewGuid ().ToString ();
         /// <summary>
         /// 公司ID
         /// </summary>
