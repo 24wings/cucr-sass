@@ -131,9 +131,7 @@ namespace Cucr.CucrSaas.App.Controllers {
                         var tomorrowZeroSeconds = todayZeroSeconds + 24 * 60 * 60;
                         var copyRules = (from rule in this.oaContext.commuteCopys where rule.companyId == tokenUser.companyId && rule.datatime == todayZeroSeconds select rule).ToList ();
                         if (copyRules.Count <= 0) {
-
                             var rule = (from c in this.oaContext.commutes where c.companyId == tokenUser.companyId select c).FirstOrDefault ();
-
                             if (rule != null) {
                                 var ruleCopy = (from c in this.oaContext.commuteCopys where c.companyId == rule.companyId select c).FirstOrDefault ();
                                 if (ruleCopy == null) {
@@ -172,6 +170,7 @@ namespace Cucr.CucrSaas.App.Controllers {
                                 this.oaContext.incardSerialNumbers.Add (incardSeri);
                                 this.oaContext.SaveChanges ();
                                 //
+                                this.incardService.refershIncard (ruleCopy, tokenUser);
 
                                 return CommonRtn.Success (new Dictionary<string, object> { { "copyRules", copyRules },
                                     { "ruleCopy", ruleCopy }

@@ -110,6 +110,7 @@ namespace Cucr {
             services.AddScoped<ICommonService, CommonService> ();
             services.AddSingleton<IUserService, UserService> ();
             services.AddSingleton<ISmsService, SmsService> ();
+            services.AddSingleton<IIncardService, IncardService> ();
 
         }
 

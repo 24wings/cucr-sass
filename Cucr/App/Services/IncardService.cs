@@ -10,12 +10,18 @@ namespace Cucr.CucrSaas.App.Service {
     /// 出勤业务
     /// </summary>
     public interface IIncardService {
-
+        /// <summary>
+        /// 刷新出勤记录
+        /// </summary>
+        /// <param name="ruleCopy"></param>
+        /// <param name="tokenUser"></param>
+        /// <returns></returns>
+        List<Incard> refershIncard (CommuteCopy ruleCopy, User tokenUser);
     }
     /// <summary>
     /// 出勤
     /// </summary>
-    public class IncardService {
+    public class IncardService : IIncardService {
 
         private ICommonService commonService { get; set; }
         /// <summary>
