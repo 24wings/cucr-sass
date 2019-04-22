@@ -67,6 +67,11 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// </summary>
         /// <value></value>
         public IUserService userService { get; set; }
+        /// <summary>
+        /// 出勤业务
+        /// </summary>
+        /// <value></value>
+        public IIncardService incardService { get; set; }
 
         /// <summary>
         /// 
@@ -75,13 +80,19 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// <param name="_sysContext"></param>
         /// <param name="_commonService"></param>
         /// <param name="_userService"></param>
+        /// <param name="_incardService"></param>
         public IncardController (OAContext _oaContext,
             SysContext _sysContext,
-            ICommonService _commonService, IUserService _userService) {
+            ICommonService _commonService, IUserService _userService,
+            IIncardService _incardService
+
+        ) {
+
             this.oaContext = _oaContext;
             this.sysContext = _sysContext;
             this.commonService = _commonService;
             this.userService = _userService;
+            this.incardService = _incardService;
         }
         /// <summary>
         /// 
@@ -160,42 +171,12 @@ namespace Cucr.CucrSaas.App.Controllers {
                                 // 进入打卡流水
                                 this.oaContext.incardSerialNumbers.Add (incardSeri);
                                 this.oaContext.SaveChanges ();
-                                // 重新汇总当天打卡情况
-                                var incardSeris = (from s in this.oaContext.incardSerialNumbers where s.inputTime >= todayZeroClockSeconds &&
-                                    s.inputTime <= tomorrowZeroClockSeconds select s).ToList ();
+                                //
 
-                                var query = (from c in this.oaContext.incards where c.inputTime >= todayZeroClockSeconds && c.inputTime <= tomorrowZeroClockSeconds select c).ToList ();
-                                Console.WriteLine (todayZeroClockSeconds + ":" + tomorrowZeroClockSeconds + "->" + query.Count);
-                                query.ForEach (c => {
-                                    this.oaContext.incards.Remove (c);
-                                });
-                                this.oaContext.SaveChanges ();
-                                if (ruleCopy.putCardNumber == 2) {
-                                    // 早班有效打卡
-                                    var normalMorning = (from c in incardSeris where c.time >= ruleCopy.beginPunchInterval1 && c.time <= ruleCopy.morningWorkTime orderby c.time ascending select c).FirstOrDefault ();
-                                    if (normalMorning != null) {
-                                        this.addIncard (InCardTimeType.First, IncardTimeResult.Normal, tokenUser.id, tokenUser.companyId, normalMorning.time);
-                                    } else {
-                                        // 早班迟到卡
-                                        var lateMorning = (from c in incardSeris where c.time >= ruleCopy.morningWorkTime && c.time <= ruleCopy.morningGoOffWork orderby c.time ascending select c).FirstOrDefault ();
-                                        if (lateMorning != null)
-                                            this.addIncard (InCardTimeType.First, IncardTimeResult.Late, tokenUser.id, tokenUser.companyId, lateMorning.time);
-                                    }
-
-                                    var normalAfternoon = (from c in incardSeris where c.time >= ruleCopy.afternoonGoOffWork && ruleCopy.endPunchInterval4 >= c.time select c).FirstOrDefault ();
-                                    if (normalAfternoon != null) {
-                                        this.addIncard (InCardTimeType.Fourth, IncardTimeResult.Normal, tokenUser.id, tokenUser.companyId, normalAfternoon.time);
-                                    } else {
-                                        var lateAfternoon = (from c in incardSeris where c.time >= ruleCopy.beginPunchInterval4 select c).FirstOrDefault ();
-                                        if (lateAfternoon != null)
-                                            this.addIncard (InCardTimeType.Fourth, IncardTimeResult.Early, tokenUser.id, tokenUser.companyId, lateAfternoon.time);
-                                    }
-                                }
-                                var incards = (from i in this.oaContext.incards where i.inputTime >= todayZeroSeconds && i.inputTime < tomorrowZeroSeconds select i).ToList ();
                                 return CommonRtn.Success (new Dictionary<string, object> { { "copyRules", copyRules },
-                                    { "ruleCopy", ruleCopy },
-                                    { "incardSeris", incardSeris },
-                                    { "incards", incards }
+                                    { "ruleCopy", ruleCopy }
+                                    // { "incardSeris", incardSeris },
+                                    // { "incards", incards }
 
                                 }, "打卡成功");
 
@@ -221,38 +202,19 @@ namespace Cucr.CucrSaas.App.Controllers {
 
         }
 
-        private void addIncard (InCardTimeType? cardType, IncardTimeResult? result, string userId, string companyId, TimeSpan? time) {
-            var now = DateTime.Now;
-            var newIncard = new Incard ();
-            newIncard.cardTimeType = cardType;
-            newIncard.result = result;
-            newIncard.cardType = IncardType.Normal;
-            newIncard.userId = userId;
-            newIncard.companyId = companyId;
-            newIncard.createTime = new DateTime ();
-            newIncard.inputTime = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0, 0)).TotalSeconds;
-            newIncard.time = time;
-            this.oaContext.incards.Add (newIncard);
-            this.oaContext.SaveChanges ();
-
-        }
-
         /// <summary>
         /// 考勤
         /// </summary>
         /// <returns></returns>
         [HttpPost ("[action]")]
         public Rtn<List<Incard>> todayIncardStatus () {
-
             var tokenUser = this.userService.getUserFromAuthcationHeader ();
             var today = new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0);
             var todaySeconds = (int) DateTime.Now.Subtract (today).TotalSeconds;
-
             var data = (from d in this.oaContext.incards where d.userId == tokenUser.id && d.inputTime >= todaySeconds select d).ToList ();
             foreach (var item in data) {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
-
             return Rtn<List<Incard>>.Success (data);
         }
         /// <summary>

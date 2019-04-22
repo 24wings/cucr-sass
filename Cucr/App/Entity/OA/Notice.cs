@@ -8,19 +8,18 @@ using Cucr.CucrSaas.Common.Util;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cucr.CucrSaas.App.Entity.OA
-{
+namespace Cucr.CucrSaas.App.Entity.OA {
     /// <summary>
     /// 消息
     /// </summary>
-    [Table("oa_notice")]
-    public class Notice
-    {
+    [Table ("oa_notice")]
+    public class Notice {
         /// <summary>
         /// 主键
         /// </summary>
         /// <returns></returns>
-        public string id = Guid.NewGuid().ToString();
+        [Key]
+        public string id = Guid.NewGuid ().ToString ();
         /// <summary>
         /// 公司ID
         /// </summary>
@@ -65,7 +64,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 录入时间
         /// </summary>
         /// <value></value>
-        public int? inputTime { get; set; } = DateUtil.getNowSeconds();
+        public int? inputTime { get; set; } = DateUtil.getNowSeconds ();
         /// <summary>
         /// 排序
         /// </summary>
