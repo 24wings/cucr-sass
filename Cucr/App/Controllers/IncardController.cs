@@ -116,7 +116,7 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// </summary>
         /// <returns></returns>
         [HttpPost ("[action]")]
-        public CommonRtn clock ([FromForm] ClockInput input) {
+        public Rtn<bool> clock ([FromForm] ClockInput input) {
             var tokenUser = this.userService.getUserFromAuthcationHeader ();
             var company = this.sysContext.companys.Find (tokenUser.companyId);
             if (company != null) {
@@ -125,78 +125,39 @@ namespace Cucr.CucrSaas.App.Controllers {
                     Console.WriteLine ((int) (company.lat * max) + ":" + ((int) (input.lat * max)));
                     if ((int) (company.lat * max) == ((int) (input.lat * max)) && (int) (company.lng * max) == ((int) (input.lng * max))) {
                         // 今日零点
-                        var todayZeroClockSeconds = (int) new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0).Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
-                        var tomorrowZeroClockSeconds = todayZeroClockSeconds + 24 * 60 * 60;
-                        var todayZeroSeconds = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
-                        var tomorrowZeroSeconds = todayZeroSeconds + 24 * 60 * 60;
-                        var copyRules = (from rule in this.oaContext.commuteCopys where rule.companyId == tokenUser.companyId && rule.datatime == todayZeroSeconds select rule).ToList ();
-                        if (copyRules.Count <= 0) {
-                            var rule = (from c in this.oaContext.commutes where c.companyId == tokenUser.companyId select c).FirstOrDefault ();
-                            if (rule != null) {
-                                var ruleCopy = (from c in this.oaContext.commuteCopys where c.companyId == rule.companyId select c).FirstOrDefault ();
-                                if (ruleCopy == null) {
-                                    var zeroDateTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
-                                    ruleCopy = new CommuteCopy {
-                                        companyId = rule.companyId,
-                                        morningWorkTime = rule.morningWorkTime,
-                                        morningGoOffWork = rule.morningGoOffWork,
-                                        afternoonWorkTime = rule.afternoonWorkTime,
-                                        afternoonGoOffWork = rule.afternoonGoOffWork,
-                                        beginPunchInterval1 = rule.beginPunchInterval1,
-                                        endPunchInterval1 = rule.endPunchInterval1,
-                                        beginPunchInterval2 = rule.beginPunchInterval2,
-                                        endPunchInterval2 = rule.endPunchInterval2,
-                                        beginPunchInterval3 = rule.beginPunchInterval3,
-                                        endPunchInterval3 = rule.endPunchInterval3,
-                                        beginPunchInterval4 = rule.beginPunchInterval4,
-                                        endPunchInterval4 = rule.endPunchInterval4,
-                                        datatime = todayZeroSeconds,
-                                        putCardNumber = rule.putCardNumber,
-                                    };
-                                    this.oaContext.commuteCopys.Add (ruleCopy);
-                                    this.oaContext.SaveChanges ();
+                        var ruleCopy = this.incardService.getUserCompanyCommuteCopy (tokenUser);
+                        // 添加打卡流水
+                        var now = DateTime.Now;
+                        var nowSeconds = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)).TotalSeconds;
+                        var incardSeri = new IncardSerialNumber {
+                            UserId = tokenUser.id,
+                            type = IncardSerialNumberType.Normal,
+                            timeSlot = InCardTimeType.First,
+                            time = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)),
+                            inputTime = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds
+                        };
+                        // 进入打卡流水
+                        this.oaContext.incardSerialNumbers.Add (incardSeri);
+                        this.oaContext.SaveChanges ();
+                        if (ruleCopy != null) {
+                            this.incardService.refershIncard (ruleCopy, tokenUser);
 
-                                }
-                                var now = DateTime.Now;
-                                var nowSeconds = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)).TotalSeconds;
-                                var incardSeri = new IncardSerialNumber {
-                                    UserId = tokenUser.id,
-                                    type = IncardSerialNumberType.Normal,
-                                    timeSlot = InCardTimeType.First,
-                                    time = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)),
-                                    inputTime = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds
-                                };
-                                // 进入打卡流水
-                                this.oaContext.incardSerialNumbers.Add (incardSeri);
-                                this.oaContext.SaveChanges ();
-                                //
-                                this.incardService.refershIncard (ruleCopy, tokenUser);
+                            return Rtn<bool>.Success (true, "打卡成功");
 
-                                return CommonRtn.Success (new Dictionary<string, object> { { "copyRules", copyRules },
-                                    { "ruleCopy", ruleCopy }
-                                    // { "incardSeris", incardSeris },
-                                    // { "incards", incards }
-
-                                }, "打卡成功");
-
-                            } else {
-
-                                return CommonRtn.Error ("该时间段不能打卡");
-                            }
                         } else {
-                            var copyRule = copyRules[0];
-                            return CommonRtn.Success (new Dictionary<string, object> { { "rules", copyRules } }, "新增记录,且打卡成功");
+                            return Rtn<bool>.Error ("尚未添加公司打卡规则");
                         }
 
                     } else {
-                        return CommonRtn.Error ("距离过远");
-                    }
-                } else {
-                    return CommonRtn.Error ("公司尚未设置经纬度,请快去设置吧");
-                }
 
+                        return Rtn<bool>.Error ("该时间段不能打卡");
+                    }
+
+                } else {
+                    return Rtn<bool>.Error ("距离过远");
+                }
             } else {
-                return CommonRtn.Error ("公司不存在");
+                return Rtn<bool>.Error ("公司尚未设置经纬度,请快去设置吧");
             }
 
         }

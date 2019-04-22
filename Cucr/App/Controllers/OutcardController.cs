@@ -94,6 +94,19 @@ namespace Cucr.CucrSaas.App.Controllers {
             foreach (var e in enclusers) {
                 e.fjId = newOutcard.id;
             }
+            var now = DateTime.Now;
+
+            var nowSeconds = DateUtil.getNowSeconds ();
+            var incardSeri = new IncardSerialNumber {
+                UserId = tokenUser.id,
+                type = IncardSerialNumberType.Normal,
+                timeSlot = InCardTimeType.First,
+                time = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)),
+                inputTime = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds
+            };
+            // 进入打卡流水
+            this.oaContext.incardSerialNumbers.Add (incardSeri);
+            this.oaContext.SaveChanges ();
             this.oaContext.Add (newOutcard);
             this.oaContext.SaveChanges ();
 

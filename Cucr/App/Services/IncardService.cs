@@ -17,6 +17,12 @@ namespace Cucr.CucrSaas.App.Service {
         /// <param name="tokenUser"></param>
         /// <returns></returns>
         List<Incard> refershIncard (CommuteCopy ruleCopy, User tokenUser);
+        /// <summary>
+        /// 获取用户公司打卡规则表
+        /// </summary>
+        /// <param name="tokenUser"></param>
+        /// <returns></returns>
+        CommuteCopy getUserCompanyCommuteCopy (User tokenUser);
     }
     /// <summary>
     /// 出勤
@@ -113,5 +119,53 @@ namespace Cucr.CucrSaas.App.Service {
             this.oaContext.SaveChanges ();
 
         }
+        /// <summary>
+        /// 获取用户公司打卡规则
+        /// </summary>
+        /// <param name="tokenUser"></param>
+        /// <returns></returns>
+        public CommuteCopy getUserCompanyCommuteCopy (User tokenUser) {
+            var todayZeroClockSeconds = (int) new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0).Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            var tomorrowZeroClockSeconds = todayZeroClockSeconds + 24 * 60 * 60;
+            var todayZeroSeconds = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            var tomorrowZeroSeconds = todayZeroSeconds + 24 * 60 * 60;
+            var copyRules = (from rule in this.oaContext.commuteCopys where rule.companyId == tokenUser.companyId && rule.datatime == todayZeroSeconds select rule).ToList ();
+            if (copyRules.Count <= 0) {
+                var rule = (from c in this.oaContext.commutes where c.companyId == tokenUser.companyId select c).FirstOrDefault ();
+                if (rule != null) {
+                    var ruleCopy = (from c in this.oaContext.commuteCopys where c.companyId == rule.companyId select c).FirstOrDefault ();
+                    if (ruleCopy == null) {
+                        var zeroDateTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
+                        ruleCopy = new CommuteCopy {
+                            companyId = rule.companyId,
+                            morningWorkTime = rule.morningWorkTime,
+                            morningGoOffWork = rule.morningGoOffWork,
+                            afternoonWorkTime = rule.afternoonWorkTime,
+                            afternoonGoOffWork = rule.afternoonGoOffWork,
+                            beginPunchInterval1 = rule.beginPunchInterval1,
+                            endPunchInterval1 = rule.endPunchInterval1,
+                            beginPunchInterval2 = rule.beginPunchInterval2,
+                            endPunchInterval2 = rule.endPunchInterval2,
+                            beginPunchInterval3 = rule.beginPunchInterval3,
+                            endPunchInterval3 = rule.endPunchInterval3,
+                            beginPunchInterval4 = rule.beginPunchInterval4,
+                            endPunchInterval4 = rule.endPunchInterval4,
+                            datatime = todayZeroSeconds,
+                            putCardNumber = rule.putCardNumber,
+                        };
+                        this.oaContext.commuteCopys.Add (ruleCopy);
+                        this.oaContext.SaveChanges ();
+                        return ruleCopy;
+                    } else {
+                        return ruleCopy;
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return copyRules[0];
+            }
+        }
+
     }
 }
