@@ -13,6 +13,7 @@ using Cucr.CucrSaas.App.DTO;
 using Cucr.CucrSaas.App.Entity.OA;
 using Cucr.CucrSaas.App.Entity.Sys;
 using Cucr.CucrSaas.App.Service;
+using Cucr.CucrSaas.Common.Util;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using JWT;
@@ -168,9 +169,12 @@ namespace Cucr.CucrSaas.App.Controllers {
         [HttpPost ("[action]")]
         public Rtn<List<Incard>> todayIncardStatus () {
             var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var today = new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0);
-            var todaySeconds = (int) DateTime.Now.Subtract (today).TotalSeconds;
-            var data = (from d in this.oaContext.incards where d.userId == tokenUser.id && d.inputTime >= todaySeconds select d).ToList ();
+            var todaySeconds = new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            var tomorrowSeconds = todaySeconds + 24 * 60 * 60;
+            Console.WriteLine ("today:" + todaySeconds + " tomorrow:" + tomorrowSeconds);
+            var data = (from d in this.oaContext.incards where d.userId == tokenUser.id &&
+                d.inputTime >= todaySeconds &&
+                d.inputTime <= tomorrowSeconds select d).ToList ();
             foreach (var item in data) {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
