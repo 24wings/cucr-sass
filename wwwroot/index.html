@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+</head>
+
+<body>
+    <input type="file" onchange="upload(this)">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script>
+        function upload(fileDom) {
+            var file = fileDom.files[0];
+            var fileReader = new FileReader();
+            fileReader.onload = function (e) {
+                var base64 = e.target.result;
+                console.log(base64);
+                $.ajax({
+                    url: "/api/CucrSaas/Common/Common/uploadFile",
+                    method: "post",
+                    contentType: "application/json",
+
+                    data: JSON.stringify({ base64: base64, ext: "ico" }),
+                    success: function (rtn) {
+                        console.log(rtn);
+                    }
+                })
+            }
+            fileReader.readAsDataURL(file);
+
+
+        }
+
+    </script>
+</body>
+
+</html>
