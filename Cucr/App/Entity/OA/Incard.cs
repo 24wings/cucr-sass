@@ -7,20 +7,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cucr.CucrSaas.App.Entity.OA
-{
+namespace Cucr.CucrSaas.App.Entity.OA {
 
     /// <summary>
     /// 出勤记录
     /// </summary>
-    [Table("oa_incard")]
-    public class Incard
-    {
+    [Table ("oa_incard")]
+    public class Incard {
         /// <summary>
         /// id
         /// </summary>
         /// <returns></returns>
-        public string id { get; set; } = Guid.NewGuid().ToString();
+        public string id { get; set; } = Guid.NewGuid ().ToString ();
         /// <summary>
         /// 公司id
         /// </summary>
@@ -32,7 +30,8 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// <value></value>
         public string userId { get; set; }
         /// <summary>
-        /// 打卡类型
+        /// 打卡类型: 0 是上下班打卡 1 补卡
+        /// 
         /// </summary>
         /// <value></value>
         public IncardType? cardType { get; set; }
@@ -43,13 +42,12 @@ namespace Cucr.CucrSaas.App.Entity.OA
         public TimeSpan? time { get; set; }
         /// <summary>
         /// 打卡时间类型,
-        /// 打卡结果(0：正常；1：迟到；2：早退；3:未打卡,4:请假,5:外勤)
-        /// 
+        /// 打卡时段(0：第一次打卡；1：第二次打卡；2：第三次打卡；3：第四次打卡)
         /// </summary>
         /// <value></value>
         public InCardTimeType? cardTimeType { get; set; }
         /// <summary>
-        /// 打卡结果(0：正常；1：迟到；2：早退；)
+        /// 打卡结果(0：正常；1：迟到；2：早退；3:未打卡,4:请假,5:外勤)
         /// </summary>
         /// <value></value>
         public IncardTimeResult? result { get; set; }
@@ -67,7 +65,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 录入时间
         /// </summary>
         /// <value></value> 
-        public int inputTime { get; set; } = 0;
+        public int? inputTime { get; set; } = 0;
         /// <summary>
         /// 排序
         /// </summary>
@@ -100,18 +98,25 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// </summary>
         /// <value></value>
         [NotMapped]
-        public IncardDaliySegment daliySegment
-        {
+        public IncardDaliySegment daliySegment {
 
-            get; set;
+            get;
+            set;
+        }
+        /// <summary>
+        /// 获取当前的输入时间的DateTime类型
+        /// </summary>
+        /// <returns></returns>
+        public DateTime getInputTime () {
+            var zeroTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
+            return zeroTime.AddSeconds ((double) this.inputTime);
         }
     }
 
     /// <summary>
     /// 打卡时间段
     /// </summary>
-    public enum IncardDaliySegment
-    {
+    public enum IncardDaliySegment {
 
         ///<summary>
         ///     早晨
@@ -126,8 +131,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
     /// <summary>
     /// 打卡类型(0：上下班打卡；1：补打卡)
     /// </summary>
-    public enum IncardType
-    {
+    public enum IncardType {
 
         /// <summary>
         /// 上下班打卡
@@ -141,8 +145,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
     /// <summary>
     /// 打卡时段(0：第一次打卡；1：第二次打卡；2：第三次打卡；3：第四次打卡)
     /// </summary>
-    public enum InCardTimeType
-    {
+    public enum InCardTimeType {
         /// <summary>
         /// 第一次打卡；
         /// </summary>
@@ -163,8 +166,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
     /// <summary>
     /// 出勤结果
     /// </summary>
-    public enum IncardTimeResult
-    {
+    public enum IncardTimeResult {
         // 打卡结果(0：正常；1：迟到；2：早退；3:未打卡,4:请假,5:外勤)
         /// <summary>
         /// 正常
@@ -190,7 +192,6 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 外勤
         /// </summary>
         OutCard,
-
 
     }
 }

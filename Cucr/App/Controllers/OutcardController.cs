@@ -84,33 +84,18 @@ namespace Cucr.CucrSaas.App.Controllers {
                 content = input.content,
                 kqType = KqType.Field,
                 title = input.title,
-                time = DateUtil.getNowSeconds (),
-                cardType = CardType.CheckIn
-
+                time = DateTime.Now.Subtract (new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0)),
+                cardType = CardType.CheckIn,
+                inputTime = DateUtil.getNowSeconds ()
             };
             var encluserIds = input.encluserIds.Split (";");
             var enclusers = (from e in this.oaContext.enclosures where encluserIds.Contains (e.id) select e).ToList ();
-
             foreach (var e in enclusers) {
                 e.fjId = newOutcard.id;
             }
-            var now = DateTime.Now;
-
-            var nowSeconds = DateUtil.getNowSeconds ();
-            var incardSeri = new IncardSerialNumber {
-                UserId = tokenUser.id,
-                type = IncardSerialNumberType.Normal,
-                timeSlot = InCardTimeType.First,
-                time = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)),
-                inputTime = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds
-            };
-            // 进入打卡流水
-            this.oaContext.incardSerialNumbers.Add (incardSeri);
-            this.oaContext.SaveChanges ();
             this.oaContext.Add (newOutcard);
             this.oaContext.SaveChanges ();
-
-            return Rtn<Outcard>.Success (null);
+            return Rtn<Outcard>.Success (newOutcard);
         }
 
     }

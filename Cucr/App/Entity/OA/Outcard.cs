@@ -16,7 +16,7 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// id
         /// </summary>
         /// <value></value>
-        /// [Key]
+        [Key]
         public string id { get; set; } = Guid.NewGuid ().ToString ();
         /// <summary>
         /// 公司Id
@@ -71,7 +71,7 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// 打卡时间
         /// </summary>
         /// <value></value>
-        public int? time { get; set; }
+        public TimeSpan? time { get; set; }
         /// <summary>
         ///  图片
         /// </summary>
@@ -101,12 +101,20 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// 录入时间
         /// </summary>
         /// <value></value>
-        public DateTime inputTime { get; set; }
+        public int? inputTime { get; set; }
         /// <summary>
         /// 排序
         /// </summary>
         /// <value></value>
         public int orderBy { get; set; }
+        /// <summary>
+        /// 获取Date类型的inputTime
+        /// </summary>
+        /// <returns></returns>
+        public DateTime getInputTime () {
+            var zeroTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
+            return zeroTime.AddSeconds ((double) this.inputTime);
+        }
     }
 
     /// <summary>

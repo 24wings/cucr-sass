@@ -141,7 +141,6 @@ namespace Cucr.CucrSaas.App.Controllers {
                         this.oaContext.SaveChanges ();
                         if (ruleCopy != null) {
                             this.incardService.refershIncard (ruleCopy, tokenUser);
-
                             return Rtn<bool>.Success (true, "打卡成功");
 
                         } else {
@@ -218,6 +217,7 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// <returns></returns>
         [HttpPost ("[action]")]
         public Rtn<IncardMonthOutput> incardMonth ([FromForm (Name = "year")] int year = 2019, [FromForm (Name = "month")] int month = 1) {
+            var tokenUser = this.userService.getUserFromAuthcationHeader ();
             var startTime = (int) new DateTime (year, month, 1, 0, 0, 0, 0, 0).Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
             int endTime;
             if (month != 12) {
@@ -229,6 +229,9 @@ namespace Cucr.CucrSaas.App.Controllers {
             foreach (var item in data) {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
+            // 外勤记录
+            var outCards = (from c in this.oaContext.outcards where c.userId == tokenUser.id && c.inputTime >= startTime && c.inputTime <= c.inputTime select c).ToList ();
+
             var output = new IncardMonthOutput ();
             output.normal = (from i in data where i.result == IncardTimeResult.Normal select i).ToList ();
             output.early = (from i in data where i.result == IncardTimeResult.Early select i).ToList ();
@@ -236,6 +239,21 @@ namespace Cucr.CucrSaas.App.Controllers {
             output.leave = (from i in data where i.result == IncardTimeResult.Leave select i).ToList ();
             output.outCard = (from i in data where i.result == IncardTimeResult.OutCard select i).ToList ();
             output.unCard = (from i in data where i.result == IncardTimeResult.UnCard select i).ToList ();
+            // 外勤记录
+            foreach (var o in outCards) {
+                var day = o.getInputTime ().Day;
+                foreach (var d in outCards) {
+                    if (d.getInputTime ().Day != day) {
+                        var newIncard = new Incard {
+                        result = IncardTimeResult.OutCard,
+                        time = d.time,
+                        inputTime = d.inputTime, userId = d.userId,
+                        daliySegment = d.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring
+                        };
+                        output.outCard.Add (newIncard);
+                    }
+                }
+            }
             return Rtn<IncardMonthOutput>.Success (output);
 
         }

@@ -121,7 +121,7 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// 创建公告
         /// </summary>
         /// <returns></returns>
-        [HttpGet ("[action]")]
+        [HttpPost ("[action]")]
         public Rtn<Notice> createNotice ([FromForm] CreateNoticeInput input) {
 
             var tokenUser = this.userService.getUserFromAuthcationHeader ();

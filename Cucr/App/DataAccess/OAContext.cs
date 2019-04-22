@@ -8,21 +8,19 @@ using Cucr.CucrSaas.App.Entity.OA;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cucr.CucrSaas.App.DataAccess
-{
+namespace Cucr.CucrSaas.App.DataAccess {
 
     /// <summary>
     /// OA数据访问
     /// </summary>
-    public class OAContext : DbContext
-    {
+    public class OAContext : DbContext {
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="options"></param>
         /// <returns></returns>
-        public OAContext(DbContextOptions<OAContext> options) : base(options) { }
+        public OAContext (DbContextOptions<OAContext> options) : base (options) { }
         /// <summary>
         /// 问卷调查
         /// </summary>
@@ -85,6 +83,11 @@ namespace Cucr.CucrSaas.App.DataAccess
         /// </summary>
         /// <value></value>
         public DbSet<Notice> notices { get; set; }
+        /// <summary>
+        /// 出勤
+        /// </summary>
+        /// <value></value>
+        public DbSet<Outcard> outcards { get; set; }
     }
 
 }
