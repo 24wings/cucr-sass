@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Cucr.CucrSaas.App.Entity;
 using Cucr.CucrSaas.App.Entity.OA;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -88,6 +89,11 @@ namespace Cucr.CucrSaas.App.DataAccess {
         /// </summary>
         /// <value></value>
         public DbSet<Outcard> outcards { get; set; }
+        /// <summary>
+        /// 聊天室
+        /// </summary>
+        /// <value></value>
+        public DbSet<ChatRoom> chatRooms { get; set; }
     }
 
 }

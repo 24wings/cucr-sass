@@ -197,6 +197,10 @@ namespace Cucr.CucrSaas.App.Controllers {
                 d.inputTime >= todaySeconds &&
                 d.inputTime <= tomorrowSeconds select d).ToList ();
 
+            foreach (var item in data) {
+                item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
+            }
+
             return Rtn<List<Incard>>.Success (data);
         }
 
