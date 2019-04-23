@@ -27,11 +27,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-namespace Cucr.CucrSaas.App.Controllers {
+namespace Cucr.CucrSaas.App.Controllers
+{
     /// <summary>
     /// 考勤打卡
     /// </summary>
-    public class ClockInput {
+    public class ClockInput
+    {
         /// <summary>
         /// Latitude 纬度
         /// </summary>
@@ -47,10 +49,11 @@ namespace Cucr.CucrSaas.App.Controllers {
     /// <summary>
     /// 出勤
     /// </summary>
-    [Route ("api/CucrSaas/App/[controller]")]
+    [Route("api/CucrSaas/App/[controller]")]
     [ApiController]
 
-    public class IncardController : ControllerBase {
+    public class IncardController : ControllerBase
+    {
 
         private ICommonService commonService { get; set; }
         /// <summary>
@@ -82,12 +85,13 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// <param name="_commonService"></param>
         /// <param name="_userService"></param>
         /// <param name="_incardService"></param>
-        public IncardController (OAContext _oaContext,
+        public IncardController(OAContext _oaContext,
             SysContext _sysContext,
             ICommonService _commonService, IUserService _userService,
             IIncardService _incardService
 
-        ) {
+        )
+        {
 
             this.oaContext = _oaContext;
             this.sysContext = _sysContext;
@@ -95,69 +99,68 @@ namespace Cucr.CucrSaas.App.Controllers {
             this.userService = _userService;
             this.incardService = _incardService;
         }
-        /// <summary>
-        /// 
-        /// 获取出勤记录列表
-        /// 可以设置日期
-        /// </summary>
-        /// <returns></returns>
-        // [HttpGet ("[action]")]
-        public CommonRtn getIncardDayInfo ([FromQuery] DataSourceLoadOptions options) {
 
-            return new CommonRtn {
-                success = true,
-                    message = "",
-                    resData = new Dictionary<string, object> { { "incards", DataSourceLoader.Load (this.oaContext.incards, options) }
-                    }
-            };
-        }
 
         /// <summary>
         /// 打卡
         /// </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<bool> clock ([FromForm] ClockInput input) {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var company = this.sysContext.companys.Find (tokenUser.companyId);
-            if (company != null) {
-                if (company.lat != null && company.lng != null) {
-                    var max = new Decimal (100);
-                    Console.WriteLine ((int) (company.lat * max) + ":" + ((int) (input.lat * max)));
-                    if ((int) (company.lat * max) == ((int) (input.lat * max)) && (int) (company.lng * max) == ((int) (input.lng * max))) {
+        [HttpPost("[action]")]
+        public Rtn<bool> clock([FromForm] ClockInput input)
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var company = this.sysContext.companys.Find(tokenUser.companyId);
+            if (company != null)
+            {
+                if (company.lat != null && company.lng != null)
+                {
+                    var max = new Decimal(100);
+                    Console.WriteLine((int)(company.lat * max) + ":" + ((int)(input.lat * max)));
+                    if ((int)(company.lat * max) == ((int)(input.lat * max)) && (int)(company.lng * max) == ((int)(input.lng * max)))
+                    {
                         // 今日零点
-                        var ruleCopy = this.incardService.getUserCompanyCommuteCopy (tokenUser);
+                        var ruleCopy = this.incardService.getUserCompanyCommuteCopy(tokenUser);
                         // 添加打卡流水
                         var now = DateTime.Now;
-                        var nowSeconds = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)).TotalSeconds;
-                        var incardSeri = new IncardSerialNumber {
+                        var nowSeconds = DateTime.Now.Subtract(new DateTime(now.Year, now.Month, now.Day, 0, 0, 0, 0)).TotalSeconds;
+                        var incardSeri = new IncardSerialNumber
+                        {
                             UserId = tokenUser.id,
                             type = IncardSerialNumberType.Normal,
                             timeSlot = InCardTimeType.First,
-                            time = DateTime.Now.Subtract (new DateTime (now.Year, now.Month, now.Day, 0, 0, 0, 0)),
-                            inputTime = (int) DateTime.Now.Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds
+                            time = DateTime.Now.Subtract(new DateTime(now.Year, now.Month, now.Day, 0, 0, 0, 0)),
+                            inputTime = (int)DateTime.Now.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds
                         };
                         // 进入打卡流水
-                        this.oaContext.incardSerialNumbers.Add (incardSeri);
-                        this.oaContext.SaveChanges ();
-                        if (ruleCopy != null) {
-                            this.incardService.refershIncard (ruleCopy, tokenUser);
-                            return Rtn<bool>.Success (true, "打卡成功");
+                        this.oaContext.incardSerialNumbers.Add(incardSeri);
+                        this.oaContext.SaveChanges();
+                        if (ruleCopy != null)
+                        {
+                            this.incardService.refershIncard(ruleCopy, tokenUser);
+                            return Rtn<bool>.Success(true, "打卡成功");
 
-                        } else {
-                            return Rtn<bool>.Error ("尚未添加公司打卡规则");
+                        }
+                        else
+                        {
+                            return Rtn<bool>.Error("尚未添加公司打卡规则");
                         }
 
-                    } else {
+                    }
+                    else
+                    {
 
-                        return Rtn<bool>.Error ("该时间段不能打卡");
+                        return Rtn<bool>.Error("该时间段不能打卡");
                     }
 
-                } else {
-                    return Rtn<bool>.Error ("距离过远");
                 }
-            } else {
-                return Rtn<bool>.Error ("公司尚未设置经纬度,请快去设置吧");
+                else
+                {
+                    return Rtn<bool>.Error("距离过远");
+                }
+            }
+            else
+            {
+                return Rtn<bool>.Error("公司尚未设置经纬度,请快去设置吧");
             }
 
         }
@@ -166,19 +169,23 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// 考勤
         /// </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<List<Incard>> todayIncardStatus () {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var todaySeconds = new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
+        [HttpPost("[action]")]
+        public Rtn<List<Incard>> todayIncardStatus()
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var todaySeconds = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
             var tomorrowSeconds = todaySeconds + 24 * 60 * 60;
-            Console.WriteLine ("today:" + todaySeconds + " tomorrow:" + tomorrowSeconds);
-            var data = (from d in this.oaContext.incards where d.userId == tokenUser.id &&
-                d.inputTime >= todaySeconds &&
-                d.inputTime <= tomorrowSeconds select d).ToList ();
-            foreach (var item in data) {
+            Console.WriteLine("today:" + todaySeconds + " tomorrow:" + tomorrowSeconds);
+            var data = (from d in this.oaContext.incards
+                        where d.userId == tokenUser.id &&
+d.inputTime >= todaySeconds &&
+d.inputTime <= tomorrowSeconds
+                        select d).ToList();
+            foreach (var item in data)
+            {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
-            return Rtn<List<Incard>>.Success (data);
+            return Rtn<List<Incard>>.Success(data);
         }
         /// <summary>
         /// 列出某天的出勤状态
@@ -186,22 +193,26 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// </summary>
         /// <param name="daySeconds">时间戳 例如2018-02-04 00:00</param>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<List<Incard>> somedayIncardStatus ([FromForm (Name = "daySeconds")] DateTime daySeconds) {
+        [HttpPost("[action]")]
+        public Rtn<List<Incard>> somedayIncardStatus([FromForm(Name = "daySeconds")] DateTime daySeconds)
+        {
 
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var todaySeconds = daySeconds.Subtract (new DateTime (1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var todaySeconds = daySeconds.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
             var tomorrowSeconds = todaySeconds + 24 * 60 * 60;
 
-            var data = (from d in this.oaContext.incards where d.userId == tokenUser.id &&
-                d.inputTime >= todaySeconds &&
-                d.inputTime <= tomorrowSeconds select d).ToList ();
+            var data = (from d in this.oaContext.incards
+                        where d.userId == tokenUser.id &&
+d.inputTime >= todaySeconds &&
+d.inputTime <= tomorrowSeconds
+                        select d).ToList();
 
-            foreach (var item in data) {
+            foreach (var item in data)
+            {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
 
-            return Rtn<List<Incard>>.Success (data);
+            return Rtn<List<Incard>>.Success(data);
         }
 
         /// <summary>
@@ -211,58 +222,69 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// distance   距离米
         ///  </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
+        [HttpPost("[action]")]
 
-        public Rtn<IncardInfoOutput> incardInfo () {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var company = this.sysContext.companys.Find (tokenUser.companyId);
-            return Rtn<IncardInfoOutput>.Success (new IncardInfoOutput { distance = company.distance, lng = company.lng, lat = company.lat });
+        public Rtn<IncardInfoOutput> incardInfo()
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var company = this.sysContext.companys.Find(tokenUser.companyId);
+            return Rtn<IncardInfoOutput>.Success(new IncardInfoOutput { distance = company.distance, lng = company.lng, lat = company.lat });
         }
 
         /// <summary>
         /// 列出出勤月记录
         /// </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<IncardMonthOutput> incardMonth ([FromForm (Name = "year")] int year = 2019, [FromForm (Name = "month")] int month = 1) {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var startTime = (int) new DateTime (year, month, 1, 0, 0, 0, 0, 0).Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
+        [HttpPost("[action]")]
+        public Rtn<IncardMonthOutput> incardMonth([FromForm(Name = "year")] int year = 2019, [FromForm(Name = "month")] int month = 1)
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var startTime = (int)new DateTime(year, month, 1, 0, 0, 0, 0, 0).Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
             int endTime;
-            if (month != 12) {
-                endTime = (int) new DateTime (year, month, 1, 0, 0, 0, 0, 0).Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
-            } else {
-                endTime = (int) new DateTime (year + 1, 1, 1, 0, 0, 0, 0, 0).Subtract (new DateTime (1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
+            if (month != 12)
+            {
+                endTime = (int)new DateTime(year, month, 1, 0, 0, 0, 0, 0).Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
             }
-            var data = (from i in this.oaContext.incards where i.inputTime >= startTime && i.inputTime <= endTime select i).ToList ();
-            foreach (var item in data) {
+            else
+            {
+                endTime = (int)new DateTime(year + 1, 1, 1, 0, 0, 0, 0, 0).Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
+            }
+            var data = (from i in this.oaContext.incards where i.inputTime >= startTime && i.inputTime <= endTime select i).ToList();
+            foreach (var item in data)
+            {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
             // 外勤记录
-            var outCards = (from c in this.oaContext.outcards where c.userId == tokenUser.id && c.inputTime >= startTime && c.inputTime <= c.inputTime select c).ToList ();
+            var outCards = (from c in this.oaContext.outcards where c.userId == tokenUser.id && c.inputTime >= startTime && c.inputTime <= c.inputTime select c).ToList();
 
-            var output = new IncardMonthOutput ();
-            output.normal = (from i in data where i.result == IncardTimeResult.Normal select i).ToList ();
-            output.early = (from i in data where i.result == IncardTimeResult.Early select i).ToList ();
-            output.late = (from i in data where i.result == IncardTimeResult.Late select i).ToList ();
-            output.leave = (from i in data where i.result == IncardTimeResult.Leave select i).ToList ();
-            output.outCard = (from i in data where i.result == IncardTimeResult.OutCard select i).ToList ();
-            output.unCard = (from i in data where i.result == IncardTimeResult.UnCard select i).ToList ();
+            var output = new IncardMonthOutput();
+            output.normal = (from i in data where i.result == IncardTimeResult.Normal select i).ToList();
+            output.early = (from i in data where i.result == IncardTimeResult.Early select i).ToList();
+            output.late = (from i in data where i.result == IncardTimeResult.Late select i).ToList();
+            output.leave = (from i in data where i.result == IncardTimeResult.Leave select i).ToList();
+            output.outCard = (from i in data where i.result == IncardTimeResult.OutCard select i).ToList();
+            output.unCard = (from i in data where i.result == IncardTimeResult.UnCard select i).ToList();
             // 外勤记录
-            foreach (var o in outCards) {
-                var day = o.getInputTime ().Day;
-                foreach (var d in outCards) {
-                    if (d.getInputTime ().Day != day) {
-                        var newIncard = new Incard {
-                        result = IncardTimeResult.OutCard,
-                        time = d.time,
-                        inputTime = d.inputTime, userId = d.userId,
-                        daliySegment = d.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring
+            foreach (var o in outCards)
+            {
+                var day = o.getInputTime().Day;
+                foreach (var d in outCards)
+                {
+                    if (d.getInputTime().Day != day)
+                    {
+                        var newIncard = new Incard
+                        {
+                            result = IncardTimeResult.OutCard,
+                            time = d.time,
+                            inputTime = d.inputTime,
+                            userId = d.userId,
+                            daliySegment = d.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring
                         };
-                        output.outCard.Add (newIncard);
+                        output.outCard.Add(newIncard);
                     }
                 }
             }
-            return Rtn<IncardMonthOutput>.Success (output);
+            return Rtn<IncardMonthOutput>.Success(output);
 
         }
     }

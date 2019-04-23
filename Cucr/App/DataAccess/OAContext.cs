@@ -94,6 +94,11 @@ namespace Cucr.CucrSaas.App.DataAccess {
         /// </summary>
         /// <value></value>
         public DbSet<ChatRoom> chatRooms { get; set; }
+        /// <summary>
+        /// 聊天消息
+        /// </summary>
+        /// <value></value>
+        public DbSet<ChatMsg> chatMsgs { get; set; }
     }
 
 }

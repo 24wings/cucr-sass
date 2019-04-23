@@ -137,8 +137,8 @@ namespace Cucr.CucrSaas.App.Controllers
         /// 获取报告详情
         /// </summary>
         /// <returns></returns>
-        [HttpGet("[action]")]
-        public CommonRtn getWorkReportInfo([FromQuery] GetWorkReportInput input)
+        [HttpPost("[action]")]
+        public CommonRtn getWorkReportInfo([FromForm] GetWorkReportInput input)
         {
             var token = this.commonService.getAuthenticationHeader();
             var appUser = this.userService.decodeToken(token);

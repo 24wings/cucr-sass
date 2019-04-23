@@ -7,8 +7,8 @@ namespace Cucr.CucrSaas.App.Entity {
     /// <summary>
     /// 聊天室
     /// </summary>
-    [Table ("oa_chat_room")]
-    public class ChatRoom {
+    [Table ("oa_chat_msg")]
+    public class ChatMsg {
         /// <summary>
         /// 主键
         /// </summary>
@@ -16,56 +16,41 @@ namespace Cucr.CucrSaas.App.Entity {
         [Key]
         public string id { get; set; } = Guid.NewGuid ().ToString ();
         /// <summary>
-        /// 群聊名字
+        /// 内容
         /// </summary>
         /// <value></value>
-        public string name { get; set; }
+        public string content { get; set; }
         /// <summary>
-        /// 创建时间
+        /// 发送时间
         /// </summary>
         /// <value></value>
-        public int inputTime { get; set; } = DateUtil.getNowSeconds ();
+        public int? sendTime { get; set; }
         /// <summary>
-        /// 创建用户Id
+        /// 消息内容类型
         /// </summary>
         /// <value></value>
-        public string userId { get; set; }
+        public ContentType contentType { get; set; }
         /// <summary>
-        /// 加入的用户Id集合
+        /// 发送用户Id
         /// </summary>
         /// <value></value>
-        public string joinUserIds { get; set; }
+        public string sendUserId { get; set; }
         /// <summary>
-        /// 加入的用户数量
+        /// 消息来源
         /// </summary>
         /// <value></value>
-        public int joinUserNum { get; set; }
+        public MsgFrom msgFrom { get; set; } = MsgFrom.User;
         /// <summary>
-        /// 聊天室状态 0启用,1禁用
+        /// 状态
         /// </summary>
         /// <value></value>
-        public ChatRoomStatus status { get; set; }
-        /// <summary>
-        /// 最后一条消息时间
-        /// </summary>
-        /// <value></value>
-        public int lastMsgTime { get; set; }
-        /// <summary>
-        /// 最后一条消息类型
-        /// </summary>
-        /// <value></value>
-        public MsgType lastMsgType { get; set; }
-        /// <summary>
-        /// 最后一条消息内容
-        /// </summary>
-        /// <value></value>
-        public string lastMsgContent { get; set; }
+        public MsgStatus status { get; set; } = MsgStatus.Active;
 
     }
     /// <summary>
     /// 聊天室状态
     /// </summary>
-    public enum ChatRoomStatus {
+    public enum ContentType {
         /// <summary>
         /// 有效
         /// </summary>
@@ -79,14 +64,30 @@ namespace Cucr.CucrSaas.App.Entity {
     /// 消息内容类型
     /// 0文本 1图片
     /// </summary>
-    public enum MsgType {
+    public enum MsgFrom {
         /// <summary>
         /// 文本
         /// </summary>
-        Text,
+        User,
         /// <summary>
         /// 图片
         /// </summary>
-        Image
+        System
+    }
+
+    /// <summary>
+    /// 消息状态
+    /// </summary>
+
+    public enum MsgStatus {
+        /// <summary>
+        /// 启用
+        /// </summary>
+        Active,
+        /// <summary>
+        /// 禁用
+        /// </summary>
+        Disabled
+
     }
 }

@@ -102,11 +102,28 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// <returns></returns>
         [HttpPost ("[action]")]
         public Rtn<ChatRoom> createChatRoom ([FromForm] CreateChatRoomInput input) {
+            var tokenUser = this.userService.getUserFromAuthcationHeader ();
             var companyFrameworkIds = input.companyFrameworkIds.Split (";");
-            foreach (var c in companyFrameworkIds) {
-
+            // 待加入的用户列表
+            var userList = new List<User> ();
+            foreach (var cId in companyFrameworkIds) {
+                var users = (from u in this.sysContext.users where u.companyFrameworkId == cId select u).ToList ();
+                foreach (var u in users) {
+                    userList.Add (u);
+                }
             }
-            var newChatRoom = new ChatRoom { };
+
+            var joinUserIds = String.Join (";", (from u in userList select u.id).ToArray ()) + ";" + input.userIds;
+            var joinUserNum = joinUserIds.Trim ().Split (";").Length;
+            var newChatRoom = new ChatRoom {
+                userId = tokenUser.id,
+                status = ChatRoomStatus.Active,
+                joinUserIds = joinUserIds,
+                joinUserNum = joinUserNum,
+                name = input.name,
+
+            };
+            // new ChatMsg{content}
             return Rtn<ChatRoom>.Success (newChatRoom);
 
         }

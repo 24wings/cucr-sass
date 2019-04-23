@@ -7,17 +7,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cucr.CucrSaas.App.Entity.OA {
+namespace Cucr.CucrSaas.App.Entity.OA
+{
     /// <summary>
     /// 出勤表,出差表
     /// </summary>
-    public class Outcard {
+    [Table("oa_outcard")]
+    public class Outcard
+    {
         /// <summary>
         /// id
         /// </summary>
         /// <value></value>
         [Key]
-        public string id { get; set; } = Guid.NewGuid ().ToString ();
+        public string id { get; set; } = Guid.NewGuid().ToString();
         /// <summary>
         /// 公司Id
         /// </summary>
@@ -111,9 +114,10 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// 获取Date类型的inputTime
         /// </summary>
         /// <returns></returns>
-        public DateTime getInputTime () {
-            var zeroTime = new DateTime (1970, 1, 1, 0, 0, 0, 0);
-            return zeroTime.AddSeconds ((double) this.inputTime);
+        public DateTime getInputTime()
+        {
+            var zeroTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return zeroTime.AddSeconds((double)this.inputTime);
         }
     }
 
@@ -121,7 +125,8 @@ namespace Cucr.CucrSaas.App.Entity.OA {
     /// 考勤类型(0：外勤打卡；1：出差打卡)
     /// </summary>
 
-    public enum KqType {
+    public enum KqType
+    {
         /// <summary>
         /// 外勤打卡
         /// </summary>
@@ -135,7 +140,8 @@ namespace Cucr.CucrSaas.App.Entity.OA {
     /// <summary>
     /// 打卡类型(0：签入；1：签出)
     /// </summary>
-    public enum CardType {
+    public enum CardType
+    {
         /// <summary>
         /// 签入
         /// </summary>
