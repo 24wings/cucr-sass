@@ -254,6 +254,11 @@ d.inputTime <= tomorrowSeconds
             {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
+
+            foreach (var item in data)
+            {
+                item.getInputTime();
+            }
             // 外勤记录
             var outCards = (from c in this.oaContext.outcards where c.userId == tokenUser.id && c.inputTime >= startTime && c.inputTime <= c.inputTime select c).ToList();
 

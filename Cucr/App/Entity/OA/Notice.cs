@@ -8,18 +8,20 @@ using Cucr.CucrSaas.Common.Util;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cucr.CucrSaas.App.Entity.OA {
+namespace Cucr.CucrSaas.App.Entity.OA
+{
     /// <summary>
     /// 消息
     /// </summary>
-    [Table ("oa_notice")]
-    public class Notice {
+    [Table("oa_notice")]
+    public class Notice
+    {
         /// <summary>
         /// 主键
         /// </summary>
         /// <returns></returns>
         [Key]
-        public string id { get; set; } = Guid.NewGuid ().ToString ();
+        public string id { get; set; } = Guid.NewGuid().ToString();
         /// <summary>
         /// 公司ID
         /// </summary>
@@ -44,7 +46,7 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// 类型
         /// </summary>
         /// <value></value>
-        public int type { get; set; }
+        public int? type { get; set; }
         /// <summary>
         /// 通知人(用户GUID集合)
         /// </summary>
@@ -59,12 +61,12 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// 是否推送(0:不推送；1：推送)
         /// </summary>
         /// <value></value>
-        public bool push { get; set; }
+        public bool? push { get; set; }
         /// <summary>
         /// 录入时间
         /// </summary>
         /// <value></value>
-        public int? inputTime { get; set; } = DateUtil.getNowSeconds ();
+        public int? inputTime { get; set; } = DateUtil.getNowSeconds();
         /// <summary>
         /// 排序
         /// </summary>
@@ -81,13 +83,13 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// </summary>
         /// <value></value>
         [NotMapped]
-        public List<Enclosure> enclusures { get; set; }
+        public List<Enclosure> enclusures { get; set; } = new List<Enclosure>();
         /// <summary>
         /// 图片列表
         /// </summary>
         /// <value></value>
         [NotMapped]
-        public List<Enclosure> images { get; set; }
+        public List<Enclosure> images { get; set; } = new List<Enclosure>();
 
     }
 }
