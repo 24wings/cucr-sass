@@ -198,6 +198,10 @@ namespace Cucr.CucrSaas.App.Entity.OA
     /// </summary>
     public enum IncardTimeResult
     {
+        /// <summary>
+        /// 午直
+        /// </summary>
+        None = -1,
         // 打卡结果(0：正常；1：迟到；2：早退；3:未打卡,4:请假,5:外勤)
         /// <summary>
         /// 正常

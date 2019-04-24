@@ -185,11 +185,21 @@ d.inputTime <= tomorrowSeconds
             {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
-            return Rtn<IncardDayOutput>.Success(new IncardDayOutput
+            var result = new IncardDayOutput();
+
+            var morning = (from item in data where item.daliySegment == IncardDaliySegment.Monring select item).FirstOrDefault();
+            var afternoon = (from item in data where item.daliySegment == IncardDaliySegment.Afternoon select item).FirstOrDefault();
+            if (morning != null)
             {
-                morning = (from item in data where item.daliySegment == IncardDaliySegment.Monring select item).FirstOrDefault(),
-                afternoon = (from item in data where item.daliySegment == IncardDaliySegment.Afternoon select item).FirstOrDefault(),
-            });
+                result.morning = morning;
+            }
+            if (afternoon != null)
+            {
+                result.afternoon = afternoon;
+            }
+
+
+            return Rtn<IncardDayOutput>.Success(result);
         }
         /// <summary>
         /// 列出某天的出勤状态
@@ -215,11 +225,21 @@ d.inputTime <= tomorrowSeconds
             {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
-            return Rtn<IncardDayOutput>.Success(new IncardDayOutput
+
+            var result = new IncardDayOutput();
+
+
+            var morning = (from item in data where item.daliySegment == IncardDaliySegment.Monring select item).FirstOrDefault();
+            var afternoon = (from item in data where item.daliySegment == IncardDaliySegment.Afternoon select item).FirstOrDefault();
+            if (morning != null)
             {
-                morning = (from item in data where item.daliySegment == IncardDaliySegment.Monring select item).FirstOrDefault(),
-                afternoon = (from item in data where item.daliySegment == IncardDaliySegment.Afternoon select item).FirstOrDefault(),
-            });
+                result.morning = morning;
+            }
+            if (afternoon != null)
+            {
+                result.afternoon = afternoon;
+            }
+            return Rtn<IncardDayOutput>.Success(result);
         }
 
         /// <summary>
