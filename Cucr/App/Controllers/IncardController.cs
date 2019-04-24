@@ -170,7 +170,7 @@ namespace Cucr.CucrSaas.App.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("[action]")]
-        public Rtn<List<Incard>> todayIncardStatus()
+        public Rtn<IncardDayOutput> todayIncardStatus()
         {
             var tokenUser = this.userService.getUserFromAuthcationHeader();
             var todaySeconds = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day).Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
@@ -185,7 +185,11 @@ d.inputTime <= tomorrowSeconds
             {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
-            return Rtn<List<Incard>>.Success(data);
+            return Rtn<IncardDayOutput>.Success(new IncardDayOutput
+            {
+                morning = (from item in data where item.daliySegment == IncardDaliySegment.Monring select item).FirstOrDefault(),
+                afternoon = (from item in data where item.daliySegment == IncardDaliySegment.Afternoon select item).FirstOrDefault(),
+            });
         }
         /// <summary>
         /// 列出某天的出勤状态
@@ -194,7 +198,7 @@ d.inputTime <= tomorrowSeconds
         /// <param name="daySeconds">时间戳 例如2018-02-04 00:00</param>
         /// <returns></returns>
         [HttpPost("[action]")]
-        public Rtn<List<Incard>> somedayIncardStatus([FromForm(Name = "daySeconds")] DateTime daySeconds)
+        public Rtn<IncardDayOutput> somedayIncardStatus([FromForm(Name = "daySeconds")] DateTime daySeconds)
         {
 
             var tokenUser = this.userService.getUserFromAuthcationHeader();
@@ -211,8 +215,11 @@ d.inputTime <= tomorrowSeconds
             {
                 item.daliySegment = item.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring;
             }
-
-            return Rtn<List<Incard>>.Success(data);
+            return Rtn<IncardDayOutput>.Success(new IncardDayOutput
+            {
+                morning = (from item in data where item.daliySegment == IncardDaliySegment.Monring select item).FirstOrDefault(),
+                afternoon = (from item in data where item.daliySegment == IncardDaliySegment.Afternoon select item).FirstOrDefault(),
+            });
         }
 
         /// <summary>

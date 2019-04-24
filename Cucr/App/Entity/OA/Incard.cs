@@ -124,16 +124,19 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 年
         /// </summary>
         /// <value></value>
+        [NotMapped]
         public int year { get; set; }
         /// <summary>
         /// 月
         /// </summary>
         /// <value></value>
+        [NotMapped]
         public int month { get; set; }
         /// <summary>
         /// 日
         /// </summary>
         /// <value></value>
+        [NotMapped]
         public int day { get; set; }
     }
 
