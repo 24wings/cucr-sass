@@ -41,7 +41,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 打卡时间
         /// </summary>
         /// <value></value>
-        public TimeSpan? time { get; set; }
+        public TimeSpan? time { get; set; } = new TimeSpan(0, 0, 0, 0, 0);
         /// <summary>
         /// 打卡时间类型,
         /// 打卡时段(0：第一次打卡；1：第二次打卡；2：第三次打卡；3：第四次打卡)

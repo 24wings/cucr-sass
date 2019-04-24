@@ -11,11 +11,11 @@ namespace Cucr.CucrSaas.App.DTO
         /// 上午出勤
         /// </summary>
         /// <value></value>
-        public Incard morning { get; set; } = new Incard { result = IncardTimeResult.None };
+        public Incard morning { get; set; } = new Incard { result = IncardTimeResult.UnCard };
         /// <summary>
         /// 下午出勤
         /// </summary>
         /// <value></value>
-        public Incard afternoon { get; set; } = new Incard { result = IncardTimeResult.None };
+        public Incard afternoon { get; set; } = new Incard { result = IncardTimeResult.UnCard };
     }
 }
