@@ -149,7 +149,7 @@ namespace Cucr.CucrSaas.App.Controllers
                     else
                     {
 
-                        return Rtn<bool>.Error("该时间段不能打卡");
+                        return Rtn<bool>.Error("距离过远");
                     }
 
                 }
@@ -236,14 +236,14 @@ d.inputTime <= tomorrowSeconds
         /// </summary>
         /// <returns></returns>
         [HttpPost("[action]")]
-        public Rtn<IncardMonthOutput> incardMonth([FromForm(Name = "year")] int year = 2019, [FromForm(Name = "month")] int month = 1)
+        public Rtn<List<Incard>> incardMonth([FromForm(Name = "year")] int year = 2019, [FromForm(Name = "month")] int month = 1)
         {
             var tokenUser = this.userService.getUserFromAuthcationHeader();
             var startTime = (int)new DateTime(year, month, 1, 0, 0, 0, 0, 0).Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
             int endTime;
             if (month != 12)
             {
-                endTime = (int)new DateTime(year, month, 1, 0, 0, 0, 0, 0).Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
+                endTime = (int)new DateTime(year, month + 1, 1, 0, 0, 0, 0, 0).Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
             }
             else
             {
@@ -257,13 +257,6 @@ d.inputTime <= tomorrowSeconds
             // 外勤记录
             var outCards = (from c in this.oaContext.outcards where c.userId == tokenUser.id && c.inputTime >= startTime && c.inputTime <= c.inputTime select c).ToList();
 
-            var output = new IncardMonthOutput();
-            output.normal = (from i in data where i.result == IncardTimeResult.Normal select i).ToList();
-            output.early = (from i in data where i.result == IncardTimeResult.Early select i).ToList();
-            output.late = (from i in data where i.result == IncardTimeResult.Late select i).ToList();
-            output.leave = (from i in data where i.result == IncardTimeResult.Leave select i).ToList();
-            output.outCard = (from i in data where i.result == IncardTimeResult.OutCard select i).ToList();
-            output.unCard = (from i in data where i.result == IncardTimeResult.UnCard select i).ToList();
             // 外勤记录
             foreach (var o in outCards)
             {
@@ -280,11 +273,11 @@ d.inputTime <= tomorrowSeconds
                             userId = d.userId,
                             daliySegment = d.time.Value.TotalSeconds >= 12 * 60 * 60 ? IncardDaliySegment.Afternoon : IncardDaliySegment.Monring
                         };
-                        output.outCard.Add(newIncard);
+                        // output.outCard.Add(newIncard);
                     }
                 }
             }
-            return Rtn<IncardMonthOutput>.Success(output);
+            return Rtn<List<Incard>>.Success(data);
 
         }
     }

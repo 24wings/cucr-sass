@@ -99,7 +99,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 录入人
         /// </summary>
         /// <value></value>
-        public int inputPerson { get; set; }
+        public string inputPerson { get; set; }
         /// <summary>
         /// 录入时间
         /// </summary>
@@ -109,7 +109,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 排序
         /// </summary>
         /// <value></value>
-        public int orderBy { get; set; }
+        public int? orderBy { get; set; }
         /// <summary>
         /// 获取Date类型的inputTime
         /// </summary>
