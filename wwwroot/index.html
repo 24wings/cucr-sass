@@ -16,6 +16,7 @@
     <script>
         function upload(fileDom) {
             var file = fileDom.files[0];
+            console.log(file)
             var fileReader = new FileReader();
             fileReader.onload = function (e) {
                 var base64 = e.target.result;

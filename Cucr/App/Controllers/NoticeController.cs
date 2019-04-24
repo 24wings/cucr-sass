@@ -26,15 +26,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-namespace Cucr.CucrSaas.App.Controllers {
+namespace Cucr.CucrSaas.App.Controllers
+{
 
     /// <summary>
     /// App登录注册授权接口
     /// </summary>
-    [Route ("api/CucrSaas/App/[controller]")]
+    [Route("api/CucrSaas/App/[controller]")]
     [ApiController]
 
-    public class NoticeController : ControllerBase {
+    public class NoticeController : ControllerBase
+    {
 
         private ICommonService commonService { get; set; }
         /// <summary>
@@ -66,12 +68,13 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// <param name="_commonService"></param>
         /// <param name="_userService"></param>
         /// <param name="_smsService"></param>
-        public NoticeController (OAContext _oaContext,
+        public NoticeController(OAContext _oaContext,
             SysContext _sysContext,
             ICommonService _commonService,
             IUserService _userService,
             ISmsService _smsService
-        ) {
+        )
+        {
             this.oaContext = _oaContext;
             this.sysContext = _sysContext;
             this.commonService = _commonService;
@@ -84,23 +87,56 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<List<Notice>> listNotices ([FromForm] ListNoticesInput input) {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var notices = this.getUserCanShowNotice (tokenUser);
+        [HttpPost("[action]")]
+        public Rtn<List<Notice>> listNotices([FromForm] ListNoticesInput input)
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var notices = this.getUserCanShowNotice(tokenUser);
+            notices = (from n in notices
 
-            return Rtn<List<Notice>>.Success (notices);
+                       select new Notice
+                       {
+                           title = n.title,
+                           noticePerson = n.noticePerson,
+                           noticePersonName = n.noticePersonName,
+                           user = (from u in this.sysContext.users where u.id == n.PersonId select u).FirstOrDefault(),
+                           inputTime = n.inputTime,
+                           type = n.type,
+                           datetime = n.datetime,
+                       }).ToList();
+            foreach (var n in notices)
+            {
+                n.resetTime();
+            }
+
+            return Rtn<List<Notice>>.Success(notices);
         }
         /// <summary>
         /// 搜索推送消息
         /// </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<List<Notice>> searchNotices ([FromForm] SearchNoticesInput input) {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var notices = this.getUserCanShowNotice (tokenUser);
-            notices = (from n in notices where n.title.Contains (input.keyword) select n).ToList ();
-            return Rtn<List<Notice>>.Success (notices);
+        [HttpPost("[action]")]
+        public Rtn<List<Notice>> searchNotices([FromForm] SearchNoticesInput input)
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var notices = this.getUserCanShowNotice(tokenUser);
+            notices = (from n in notices
+                       where n.title.Contains(input.keyword)
+                       select new Notice
+                       {
+                           title = n.title,
+                           noticePerson = n.noticePerson,
+                           noticePersonName = n.noticePersonName,
+                           user = (from u in this.sysContext.users where u.id == n.PersonId select u).FirstOrDefault(),
+                           inputTime = n.inputTime,
+                           type = n.type,
+                           datetime = n.datetime,
+                       }).ToList();
+            foreach (var n in notices)
+            {
+                n.resetTime();
+            }
+            return Rtn<List<Notice>>.Success(notices);
         }
 
         /// <summary>
@@ -108,39 +144,43 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// </summary>
         /// <param name="tokenUser"></param>
         /// <returns></returns>
-        private List<Notice> getUserCanShowNotice (User tokenUser) {
+        private List<Notice> getUserCanShowNotice(User tokenUser)
+        {
 
-            var companyFrameworkNotices = (from notice in this.oaContext.notices where notice.noticeCompanyFrameworkIds.Contains (tokenUser.companyFrameworkId) select notice).ToList ();
-            var notices = (from notice in this.oaContext.notices where notice.noticePerson.Contains (tokenUser.id) || notice.PersonId == tokenUser.id select notice).ToList ();
-            companyFrameworkNotices.AddRange (notices);
-            var ids = (from n in companyFrameworkNotices select n.id).ToArray ().Distinct ();
-            return (from n in notices where ids.Contains (n.id) orderby n.inputTime descending select n).ToList ();
+            var companyFrameworkNotices = (from notice in this.oaContext.notices where notice.noticeCompanyFrameworkIds.Contains(tokenUser.companyFrameworkId) select notice).ToList();
+            var notices = (from notice in this.oaContext.notices where notice.noticePerson.Contains(tokenUser.id) || notice.PersonId == tokenUser.id select notice).ToList();
+            companyFrameworkNotices.AddRange(notices);
+            var ids = (from n in companyFrameworkNotices select n.id).ToArray().Distinct();
+            return (from n in notices where ids.Contains(n.id) orderby n.inputTime descending select n).ToList();
         }
 
         /// <summary>
         /// 创建公告
         /// </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<Notice> createNotice ([FromForm] CreateNoticeInput input) {
+        [HttpPost("[action]")]
+        public Rtn<Notice> createNotice([FromForm] CreateNoticeInput input)
+        {
 
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
 
-            var newNotice = new Notice {
-                id = Guid.NewGuid ().ToString (),
+            var newNotice = new Notice
+            {
+                id = Guid.NewGuid().ToString(),
                 noticePerson = input.noticePerson,
                 noticeCompanyFrameworkIds = input.noticeCompanyFrameworkIds,
                 content = input.content
             };
-            var enclosureIds = input.encluserIds.Split (";");
-            var enclosures = (from e in this.oaContext.enclosures where enclosureIds.Contains (e.id) select e).ToList ();
-            foreach (var e in enclosures) {
+            var enclosureIds = input.encluserIds.Split(";");
+            var enclosures = (from e in this.oaContext.enclosures where enclosureIds.Contains(e.id) select e).ToList();
+            foreach (var e in enclosures)
+            {
                 e.fjId = newNotice.id;
             }
-            this.oaContext.Add (newNotice);
-            this.oaContext.SaveChanges ();
+            this.oaContext.Add(newNotice);
+            this.oaContext.SaveChanges();
 
-            return Rtn<Notice>.Success (newNotice);
+            return Rtn<Notice>.Success(newNotice);
 
         }
 
@@ -149,40 +189,47 @@ namespace Cucr.CucrSaas.App.Controllers {
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<Comment> createNoticeComment ([FromForm] CreateNoticeCommentInput input) {
-            var tokenUser = this.userService.getUserFromAuthcationHeader ();
-            var newComment = new Comment {
-                id = Guid.NewGuid ().ToString (),
+        [HttpPost("[action]")]
+        public Rtn<Comment> createNoticeComment([FromForm] CreateNoticeCommentInput input)
+        {
+            var tokenUser = this.userService.getUserFromAuthcationHeader();
+            var newComment = new Comment
+            {
+                id = Guid.NewGuid().ToString(),
                 personid = tokenUser.id,
                 parentId = input.parentId,
                 content = input.content,
                 dyId = input.noticeId
             };
-            var enclosureIds = input.enclusureIds.Split (";");
-            var enclusures = (from e in this.oaContext.enclosures where enclosureIds.Contains (e.id) select e).ToList ();
-            foreach (var e in enclusures) {
+            var enclosureIds = input.enclusureIds.Split(";");
+            var enclusures = (from e in this.oaContext.enclosures where enclosureIds.Contains(e.id) select e).ToList();
+            foreach (var e in enclusures)
+            {
                 e.fjId = newComment.id;
             }
-            this.oaContext.Add (newComment);
-            this.oaContext.SaveChanges ();
-            return Rtn<Comment>.Success (newComment);
+            this.oaContext.Add(newComment);
+            this.oaContext.SaveChanges();
+            return Rtn<Comment>.Success(newComment);
         }
         /// <summary>
         /// 列出公告评论
         /// </summary>
         /// <returns></returns>
-        [HttpPost ("[action]")]
-        public Rtn<List<Comment>> listNoticeComment ([FromForm (Name = "noticeId")] string noticeId) {
-            var comments = (from c in this.oaContext.comments where c.dyId == noticeId select c).ToList ();
-            foreach (var c in comments) {
-                var enclusers = (from e in this.oaContext.enclosures where e.fjId == c.id select e).ToList ();
-                c.enclusures = (from e in enclusers where e.fjType != "image"
-                    select e).ToList ();
-                c.images = (from e in enclusers where e.fjType == "image"
-                    select e).ToList ();
+        [HttpPost("[action]")]
+        public Rtn<List<Comment>> listNoticeComment([FromForm(Name = "noticeId")] string noticeId)
+        {
+            var comments = (from c in this.oaContext.comments where c.dyId == noticeId select c).ToList();
+            foreach (var c in comments)
+            {
+                var enclusers = (from e in this.oaContext.enclosures where e.fjId == c.id select e).ToList();
+                c.enclusures = (from e in enclusers
+                                where e.fjType != "image"
+                                select e).ToList();
+                c.images = (from e in enclusers
+                            where e.fjType == "image"
+                            select e).ToList();
             }
-            return Rtn<List<Comment>>.Success (comments);
+            return Rtn<List<Comment>>.Success(comments);
         }
     }
 }

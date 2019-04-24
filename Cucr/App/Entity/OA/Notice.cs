@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Cucr.CucrSaas.App.Entity.Sys;
 using Cucr.CucrSaas.Common.Util;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -53,10 +54,15 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// <value></value>
         public string noticePerson { get; set; }
         /// <summary>
+        /// 推送人姓名
+        /// </summary>
+        /// <value></value>
+        public string noticePersonName { get; set; }
+        /// <summary>
         /// 发布时间
         /// </summary>
         /// <value></value>
-        public int? datetime { get; set; }
+        public int? datetime { get; set; } = DateUtil.getNowSeconds();
         /// <summary>
         /// 是否推送(0:不推送；1：推送)
         /// </summary>
@@ -90,6 +96,29 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// <value></value>
         [NotMapped]
         public List<Enclosure> images { get; set; } = new List<Enclosure>();
+        /// <summary>
+        /// 用户
+        /// </summary>
+        /// <value></value>
+        [NotMapped]
+        public User user { get; set; }
+        /// <summary>
+        /// 时间
+        /// </summary>
+        /// <value></value>
+        public DateTime? inputDateTime { get; set; }
+        /// <summary>
+        /// 重设时间
+        /// </summary>
+        /// <returns></returns>
+        public DateTime resetTime()
+        {
+            var zeroTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+
+            var dateTime = zeroTime.AddSeconds((double)this.inputTime);
+            this.inputDateTime = dateTime;
+            return dateTime;
+        }
 
     }
 }
