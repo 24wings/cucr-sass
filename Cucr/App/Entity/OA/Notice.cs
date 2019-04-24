@@ -84,12 +84,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// <value></value>
         public string noticeCompanyFrameworkIds { get; set; }
 
-        /// <summary>
-        /// 附件列表
-        /// </summary>
-        /// <value></value>
-        [NotMapped]
-        public List<Enclosure> enclusures { get; set; } = new List<Enclosure>();
+
         /// <summary>
         /// 图片列表
         /// </summary>
@@ -120,6 +115,32 @@ namespace Cucr.CucrSaas.App.Entity.OA
             this.inputDateTime = dateTime;
             return dateTime;
         }
+        /// <summary>
+        /// 消息推送人列表
+        /// </summary>
+        /// <value></value>
+        [NotMapped]
+        public List<User> noticePersonList { get; set; } = new List<User> { };
+        /// <summary>
+        /// 附件列表
+        /// </summary>
+        /// <returns></returns>
+        [NotMapped]
+        public List<Enclosure> enclusureList { get; set; } = new List<Enclosure>();
+        /// <summary>
+        /// 图片列表
+        /// </summary>
+        /// <returns></returns>
+        [NotMapped]
+        public List<Enclosure> imageList { get; set; } = new List<Enclosure>();
+        /// <summary>
+        /// 推送组织架构列表
+        /// </summary>
+        /// <returns></returns>
+        [NotMapped]
+        public List<CompanyFramework> noticeCompanyFrameworkList { get; set; } = new List<CompanyFramework>();
+
+
 
     }
 }

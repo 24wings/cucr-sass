@@ -83,6 +83,42 @@ namespace Cucr.CucrSaas.App.Controllers
         }
 
         /// <summary>
+        /// 公告详情
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("[action]")]
+        public Rtn<Notice> noticeInfo([FromForm(Name = "noticeId")]string noticeId)
+        {
+
+            var notice = this.oaContext.notices.Find(noticeId);
+            if (notice != null)
+            {
+                notice.user = this.sysContext.users.Find(notice.PersonId);
+                if (notice.noticePerson != null)
+                {
+                    var noticePersonStrArray = notice.noticePerson.Split(";").ToArray();
+                    notice.noticePersonList = (from u in this.sysContext.users where noticePersonStrArray.Contains(u.id) select u).ToList();
+                }
+                if (notice.noticeCompanyFrameworkIds != null)
+                {
+                    var noticeCompanyFrameworkIdArr = notice.noticeCompanyFrameworkIds.Split(";").ToArray();
+                    notice.noticeCompanyFrameworkList = (from c in this.sysContext.companyFrameworks where noticeCompanyFrameworkIdArr.Contains(c.id) select c).ToList();
+                }
+
+                var enclusures = (from e in this.oaContext.enclosures where e.fjId == notice.id select e).ToList();
+                notice.imageList = (from e in enclusures where e.fjType == "image" select e).ToList();
+                notice.enclusureList = (from e in enclusures where e.fjType != "image" select e).ToList();
+                return Rtn<Notice>.Success(notice);
+            }
+            else
+            {
+                return Rtn<Notice>.Error("公告不存在");
+            }
+
+
+
+        }
+        /// <summary>
         /// 列出能够看的公告
         /// </summary>
         /// <param name="input"></param>
