@@ -106,6 +106,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         /// 时间
         /// </summary>
         /// <value></value>
+        [NotMapped]
         public DateTime? inputDateTime { get; set; }
         /// <summary>
         /// 重设时间
@@ -114,7 +115,7 @@ namespace Cucr.CucrSaas.App.Entity.OA
         public DateTime resetTime()
         {
             var zeroTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-
+            if (this.inputTime == null) this.inputTime = 0;
             var dateTime = zeroTime.AddSeconds((double)this.inputTime);
             this.inputDateTime = dateTime;
             return dateTime;

@@ -26,5 +26,15 @@ namespace Cucr.CucrSaas.App.DTO
         /// </summary>
         /// <value></value>
         public string keyword { get; set; }
+        /// <summary>
+        /// 分页
+        /// </summary>
+        /// <value></value>
+        public int page { get; set; } = 0;
+        /// <summary>
+        /// 数据量
+        /// </summary>
+        /// <value></value>
+        public int pageSize { get; set; } = 10;
     }
 }
