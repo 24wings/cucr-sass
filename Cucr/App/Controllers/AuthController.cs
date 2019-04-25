@@ -130,17 +130,13 @@ namespace Cucr.CucrSaas.App.Controllers
                 Console.WriteLine("companyId" + exisitUser.companyId);
                 this.sysContext.SaveChanges();
 
-                return new CommonRtn { success = true, message = "登录成功", resData = new Dictionary<string, object>() { { "token", token }, { "user", exisitUser } } };
-                // }
-                // else
-                // {
-                // return CommonRtn.Error("登录失败,用户密码错误");
-                // }
+                return CommonRtn.Success(new Dictionary<string, object>() { { "token", token }, { "user", exisitUser } }, "登录成功");
+
             }
             else
             {
 
-                return new CommonRtn { success = false, message = "登录失败,用户不存在", };
+                return CommonRtn.Error("登录失败,用户不存在");
             }
 
         }

@@ -123,4 +123,5 @@ namespace Cucr.CucrSaas.App.DTO
         LogicNotAllow = 400
 
     }
+
 }
