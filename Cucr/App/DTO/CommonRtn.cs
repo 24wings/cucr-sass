@@ -36,7 +36,7 @@ namespace Cucr.CucrSaas.App.DTO
         /// <returns></returns>
         public static CommonRtn Error(string message)
         {
-            return new CommonRtn { success = false, message = message, resData = new Dictionary<string, object>(), code = StatusCode.Success };
+            return new CommonRtn { success = false, message = message, resData = new Dictionary<string, object>(), code = StatusCode.LogicNotAllow };
         }
         /// <summary>
         /// 便捷方法返回正确消息
@@ -94,7 +94,7 @@ namespace Cucr.CucrSaas.App.DTO
         /// <returns></returns>
         public static Rtn<T> Success(T data, string message = "")
         {
-            return new Rtn<T> { success = true, message = message, resData = new Response<T> { data = data }, code = StatusCode.NotLogin };
+            return new Rtn<T> { success = true, message = message, resData = new Response<T> { data = data }, code = StatusCode.Success };
         }
     }
     /// <summary>
