@@ -140,7 +140,7 @@ namespace Cucr.CucrSaas.App.Controllers
                            inputTime = n.inputTime,
                            type = n.type,
                            datetime = n.datetime,
-                       }).ToList();
+                       }).Skip(input.page * input.pageSize).Take(input.pageSize).ToList();
             foreach (var n in notices)
             {
                 n.resetTime();

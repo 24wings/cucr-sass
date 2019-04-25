@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 
-namespace Cucr.CucrSaas.App.DTO {
+namespace Cucr.CucrSaas.App.DTO
+{
 
     /// <summary>
     /// 通用响应体
     /// </summary>
-    public class CommonRtn {
+    public class CommonRtn
+    {
 
         /// <summary>
         /// 消息
@@ -26,14 +28,15 @@ namespace Cucr.CucrSaas.App.DTO {
         ///  状态码
         /// </summary>
         /// <value></value>
-        public int code { get; set; }
+        public StatusCode code { get; set; }
         /// <summary>
         /// 便捷方法返回错误消息
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static CommonRtn Error (string message) {
-            return new CommonRtn { success = false, message = message, resData = new Dictionary<string, object> (), code = 200 };
+        public static CommonRtn Error(string message)
+        {
+            return new CommonRtn { success = false, message = message, resData = new Dictionary<string, object>(), code = StatusCode.Success };
         }
         /// <summary>
         /// 便捷方法返回正确消息
@@ -41,8 +44,9 @@ namespace Cucr.CucrSaas.App.DTO {
         /// <param name="resData"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static CommonRtn Success (Dictionary<string, object> resData, string message = "") {
-            return new CommonRtn { success = true, message = message, resData = resData, code = 200 };
+        public static CommonRtn Success(Dictionary<string, object> resData, string message = "")
+        {
+            return new CommonRtn { success = true, message = message, resData = resData, code = StatusCode.Success };
         }
 
     }
@@ -51,7 +55,8 @@ namespace Cucr.CucrSaas.App.DTO {
     /// 返回给前端的数据
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Rtn<T> {
+    public class Rtn<T>
+    {
         /// <summary>
         /// 消息
         /// </summary>
@@ -69,6 +74,9 @@ namespace Cucr.CucrSaas.App.DTO {
         public Response<T> resData { get; set; }
         /// <summary>
         ///  状态码
+        /// Success=200,
+        /// NotLogin=403,
+        /// LogicNotAllow=400
         /// </summary>
         /// <value></value>
         public int code { get; set; }
@@ -77,7 +85,8 @@ namespace Cucr.CucrSaas.App.DTO {
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static Rtn<T> Error (string message) {
+        public static Rtn<T> Error(string message)
+        {
             return new Rtn<T> { success = false, message = message, resData = new Response<T> { }, code = 400 };
         }
         /// <summary>
@@ -86,7 +95,8 @@ namespace Cucr.CucrSaas.App.DTO {
         /// <param name="data"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static Rtn<T> Success (T data, string message = "") {
+        public static Rtn<T> Success(T data, string message = "")
+        {
             return new Rtn<T> { success = true, message = message, resData = new Response<T> { data = data }, code = 200 };
         }
     }
@@ -94,11 +104,23 @@ namespace Cucr.CucrSaas.App.DTO {
     /// 响应体数据
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Response<T> {
+    public class Response<T>
+    {
         /// <summary>
         /// 数据
         /// </summary>
         /// <value></value>
         public T data { get; set; }
+    }
+
+    /// <summary>
+    /// 状态码
+    /// </summary>
+    public enum StatusCode
+    {
+        Success = 200,
+        NotLogin = 403,
+        LogicNotAllow = 400
+
     }
 }

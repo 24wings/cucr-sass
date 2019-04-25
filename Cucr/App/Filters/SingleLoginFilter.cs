@@ -61,7 +61,7 @@ namespace Cucr.CucrSaas.App.Filters
                 var token = this.commonService.getAuthenticationHeader();
                 if (token == "" || token == null)
                 {
-                    context.Result = new JsonResult(new CommonRtn { success = false, message = "用户尚未登陆", code = 400 });
+                    context.Result = new JsonResult(new CommonRtn { success = false, message = "用户尚未登陆", code = StatusCode.NotLogin });
                 }
                 else
                 {
@@ -69,7 +69,7 @@ namespace Cucr.CucrSaas.App.Filters
                     if (tokenUserCount <= 0)
                     {
                         Console.WriteLine("===========error======");
-                        context.Result = new JsonResult(new CommonRtn { success = false, message = "你已经在其他设备登录", code = 400 });
+                        context.Result = new JsonResult(new CommonRtn { success = false, message = "你已经在其他设备登录", code = StatusCode.NotLogin });
                     }
                 }
 
