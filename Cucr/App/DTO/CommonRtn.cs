@@ -74,12 +74,9 @@ namespace Cucr.CucrSaas.App.DTO
         public Response<T> resData { get; set; }
         /// <summary>
         ///  状态码
-        /// Success=200,
-        /// NotLogin=403,
-        /// LogicNotAllow=400
         /// </summary>
         /// <value></value>
-        public int code { get; set; }
+        public StatusCode code { get; set; }
         /// <summary>
         /// 便捷方法返回错误消息
         /// </summary>
@@ -87,7 +84,7 @@ namespace Cucr.CucrSaas.App.DTO
         /// <returns></returns>
         public static Rtn<T> Error(string message)
         {
-            return new Rtn<T> { success = false, message = message, resData = new Response<T> { }, code = 400 };
+            return new Rtn<T> { success = false, message = message, resData = new Response<T> { }, code = StatusCode.NotLogin };
         }
         /// <summary>
         /// 便捷方法返回正确消息
@@ -97,7 +94,7 @@ namespace Cucr.CucrSaas.App.DTO
         /// <returns></returns>
         public static Rtn<T> Success(T data, string message = "")
         {
-            return new Rtn<T> { success = true, message = message, resData = new Response<T> { data = data }, code = 200 };
+            return new Rtn<T> { success = true, message = message, resData = new Response<T> { data = data }, code = StatusCode.NotLogin };
         }
     }
     /// <summary>
@@ -113,8 +110,11 @@ namespace Cucr.CucrSaas.App.DTO
         public T data { get; set; }
     }
 
-    /// <summary>
+    /// <summary> 
     /// 状态码
+    /// Success=200,
+    /// NotLogin=403
+    /// LogicNotAllow=400
     /// </summary>
     public enum StatusCode
     {
