@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cucr.CucrSaas.App.DataAccess;
 using Cucr.CucrSaas.App.DTO;
+using Cucr.CucrSaas.App.Entity.OA;
 using Cucr.CucrSaas.App.Entity.Sys;
 using Cucr.CucrSaas.App.Service;
 using DevExtreme.AspNet.Data;
@@ -27,6 +28,18 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 namespace Cucr.CucrSaas.App.Controllers
 {
+    /// <summary>
+    /// 工资条查询
+    /// </summary>
+    public class WagesSearchInput
+    {
+        /// <summary>
+        /// 年份月份时间戳
+        /// </summary>
+        /// <value></value>
+        public DateTime yearMonth { get; set; }
+
+    }
 
     /// <summary>
     /// 工资条
@@ -71,37 +84,25 @@ namespace Cucr.CucrSaas.App.Controllers
             this.userService = _userService;
         }
         /// <summary>
-        /// 
-        /// 获取出勤记录列表
-        /// 可以设置日期
+        /// 获取用户某月工资条
         /// </summary>
         /// <returns></returns>
-        [HttpGet("[action]")]
-        public CommonRtn getUserWages([FromQuery] DataSourceLoadOptions options)
+        [HttpPost("[action]")]
+        public Rtn<Wages> getUserWagesMonth([FromForm]WagesSearchInput input)
         {
-            var token = this.commonService.getAuthenticationHeader();
-            var instance = this.userService.decodeToken(token);
-            if (instance?.user != null)
+            var instance = this.userService.getUserFromAuthcationHeader();
+            var startTime = (int)input.yearMonth.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalSeconds;
+            var endTime = (int)input.yearMonth.AddMonths(1).Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds;
+            Console.WriteLine("startTime:" + startTime + " endtime:" + endTime);
+            var wages = (from w in this.oaContext.wageses where w.grantTime >= startTime && w.grantTime <= endTime && w.userId == instance.id select w).FirstOrDefault();
+            if (wages == null)
             {
-                var query = from wages in this.oaContext.wageses where wages.userId == instance.user.id select wages;
-                var result = DataSourceLoader.Load(query, options);
+                return Rtn<Wages>.Error("该月份暂无工资条");
 
-                return new CommonRtn
-                {
-                    success = true,
-                    message = "",
-                    resData = new Dictionary<string, object> { { "data", result }
-                        }
-                };
             }
-            else
-            {
-                return new CommonRtn
-                {
-                    success = false,
-                    message = "用户尚未登录"
-                };
-            };
+            return Rtn<Wages>.Success(wages);
+
+
         }
 
     }

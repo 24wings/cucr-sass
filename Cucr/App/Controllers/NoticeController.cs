@@ -132,6 +132,7 @@ namespace Cucr.CucrSaas.App.Controllers
 
                        select new Notice
                        {
+                           id = n.id,
                            title = n.title,
                            noticePerson = n.noticePerson,
                            noticePersonName = n.noticePersonName,
@@ -160,6 +161,7 @@ namespace Cucr.CucrSaas.App.Controllers
                        where n.title.Contains(input.keyword)
                        select new Notice
                        {
+                           id = n.id,
                            title = n.title,
                            noticePerson = n.noticePerson,
                            noticePersonName = n.noticePersonName,
