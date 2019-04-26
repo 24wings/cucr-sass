@@ -61,7 +61,7 @@ namespace Cucr.CucrSaas.App.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("[action]")]
-        public Rtn<Enclosure> uploadFile(UploadFileInput input)
+        public Rtn<Enclosure> uploadFile([FromForm]UploadFileInput input)
         {
             var strArr = input.filename.Split(".");
             var ext = strArr.Length > 0 ? strArr[strArr.Length - 1] : "";
