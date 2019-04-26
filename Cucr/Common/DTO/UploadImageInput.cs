@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 namespace Cucr.CucrSaas.Common.DTO
 {
     /// <summary>
@@ -11,7 +13,26 @@ namespace Cucr.CucrSaas.Common.DTO
         /// </summary>
         /// <value></value>
         public string base64 { get; set; }
-
-        // public string ext { get; set; } = "png";
+        /// <summary>
+        /// 扩展名
+        /// </summary>
+        /// <value></value>
+        public string ext { get; set; } = "png";
+        /// <summary>
+        /// 文件名
+        /// </summary>
+        /// <value></value>
+        public string filename { get; set; }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public class UploadImageList
+    {
+        /// <summary>
+        /// 图片列表
+        /// </summary>
+        /// <value></value>
+        public List<UploadImageInput> imageList { get; set; }
     }
 }

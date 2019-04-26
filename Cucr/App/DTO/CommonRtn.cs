@@ -118,8 +118,20 @@ namespace Cucr.CucrSaas.App.DTO
     /// </summary>
     public enum StatusCode
     {
+        /// <summary> 
+        /// 状态码
+        /// Success=200,
+        /// NotLogin=403
+        /// LogicNotAllow=400
+        /// </summary>
         Success = 200,
+        /// <summary> 
+        /// NotLogin=403
+        /// </summary>
         NotLogin = 403,
+        /// <summary> 
+        /// LogicNotAllow=400
+        /// </summary>
         LogicNotAllow = 400
 
     }
