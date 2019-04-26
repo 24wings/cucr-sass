@@ -13,11 +13,7 @@ namespace Cucr.CucrSaas.Common.DTO
         /// </summary>
         /// <value></value>
         public string base64 { get; set; }
-        /// <summary>
-        /// 扩展名
-        /// </summary>
-        /// <value></value>
-        public string ext { get; set; } = "png";
+
         /// <summary>
         /// 文件名
         /// </summary>

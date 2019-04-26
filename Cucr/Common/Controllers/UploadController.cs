@@ -63,9 +63,10 @@ namespace Cucr.CucrSaas.App.Controllers
         [HttpPost("[action]")]
         public Rtn<Enclosure> uploadFile(UploadFileInput input)
         {
-
-            var url = this.SaveFile(input.base64, input.ext);
-            var file = new Enclosure { fjName = input.fileName, fjAddress = url, fjType = input.ext };
+            var strArr = input.filename.Split(".");
+            var ext = strArr.Length > 0 ? strArr[strArr.Length - 1] : "";
+            var url = this.SaveFile(input.base64, ext);
+            var file = new Enclosure { fjName = input.filename, fjAddress = url, fjType = ext };
             this.oaContext.enclosures.Add(file);
             this.oaContext.SaveChanges();
             return Rtn<Enclosure>.Success(file);
@@ -81,8 +82,10 @@ namespace Cucr.CucrSaas.App.Controllers
         [HttpPost("[action]")]
         public Rtn<Enclosure> uploadImage([FromForm]UploadImageInput input)
         {
+            var strArr = input.filename.Split(".");
+            var ext = strArr.Length > 0 ? strArr[strArr.Length - 1] : "";
             var url = this.SaveImage(input.base64, "test");
-            var file = new Enclosure { fjName = input.filename, fjAddress = url, fjType = input.ext };
+            var file = new Enclosure { fjName = input.filename, fjAddress = url, fjType = ext };
             this.oaContext.enclosures.Add(file);
             this.oaContext.SaveChanges();
             return Rtn<Enclosure>.Success(file);
@@ -99,8 +102,10 @@ namespace Cucr.CucrSaas.App.Controllers
             var encluserList = new List<Enclosure>();
             foreach (var image in input.imageList)
             {
+                var strArr = image.filename.Split(".");
+                var ext = strArr.Length > 0 ? strArr[strArr.Length - 1] : "";
                 var url = this.SaveImage(image.base64, "test");
-                var file = new Enclosure { fjName = image.filename, fjAddress = url, fjType = image.ext };
+                var file = new Enclosure { fjName = image.filename, fjAddress = url, fjType = ext };
                 this.oaContext.enclosures.Add(file);
                 encluserList.Add(file);
             }
