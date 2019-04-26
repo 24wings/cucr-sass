@@ -1,4 +1,6 @@
 using System;
+using Microsoft.AspNetCore.Http;
+
 namespace Cucr.CucrSaas.Common.DTO
 {
     /// <summary>
@@ -10,7 +12,7 @@ namespace Cucr.CucrSaas.Common.DTO
         /// base64格式
         /// </summary>
         /// <value></value>
-        public string base64 { get; set; }
+        public IFormFile file { get; set; }
 
         /// <summary>
         /// 文件名字,默认为上传文件
