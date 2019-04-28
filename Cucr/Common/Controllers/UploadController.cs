@@ -66,9 +66,10 @@ namespace Cucr.CucrSaas.App.Controllers
             var strArr = input.filename.Split(".");
             var ext = strArr.Length > 0 ? strArr[strArr.Length - 1] : "";
             Stream fromFile = input.file.OpenReadStream();
+
             var res = OSSService.uploadFile(fromFile, input.filename);
             var url = "https://cucr.oss-cn-beijing.aliyuncs.com/" + ((int)DateTime.Now.Subtract(new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds) + "/" + input.filename;
-            var file = new Enclosure { fjName = input.filename, fjAddress = url, fjType = ext };
+            var file = new Enclosure { fjName = input.filename, fjAddress = url, fjType = ext, fileSize = fromFile.Length };
             this.oaContext.enclosures.Add(file);
             this.oaContext.SaveChanges();
             return Rtn<Enclosure>.Success(file);

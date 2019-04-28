@@ -254,7 +254,7 @@ namespace Cucr.CucrSaas.App.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("[action]")]
-        public Rtn<List<Comment>> listNoticeComment([FromForm(Name = "noticeId")] string noticeId)
+        public Rtn<List<Comment>> listNoticeComment([FromForm(Name = "noticeId")] string noticeId, [FromForm(Name = "page")] int page = 0, [FromForm(Name = "pageSize")] int pageSize = 10)
         {
             var comments = (from c in this.oaContext.comments where c.dyId == noticeId select c).ToList();
             foreach (var c in comments)

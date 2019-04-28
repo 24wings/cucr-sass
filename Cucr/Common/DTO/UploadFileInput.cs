@@ -9,7 +9,7 @@ namespace Cucr.CucrSaas.Common.DTO
     public class UploadFileInput
     {
         /// <summary>
-        /// base64格式
+        ///  文件流
         /// </summary>
         /// <value></value>
         public IFormFile file { get; set; }

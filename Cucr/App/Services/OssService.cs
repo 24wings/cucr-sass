@@ -15,8 +15,8 @@ namespace Cucr.CucrSaas.App.Service
     public class OSSService
     {
         static string url { get; } = @"http://wingsworker.oss-cn-beijing.aliyuncs.com";
-        static string accessKeyId = "LTAIcMnaxxUG7dbk";
-        static string accessKeySecret = "VhNgQZrGYz7dXpiCUS8r36mbLgy6db ";
+        static string accessKeyId = "LTAI896g9EwJy1Bv";
+        static string accessKeySecret = "kkwucSdtN5dfiZ4H32B0fiwX7Hz42N";
         static string endpoint = "oss-cn-beijing.aliyuncs.com";
         static OssClient client = new OssClient(endpoint, accessKeyId, accessKeySecret);
 
@@ -31,7 +31,7 @@ namespace Cucr.CucrSaas.App.Service
         /// <param name="key"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static PutObjectResult uploadFile(Stream stream, string key, string bucketName = "cucr")
+        public static PutObjectResult uploadFile(Stream stream, string key, string bucketName = "miaobook")
         {
             try
             {
@@ -345,6 +345,13 @@ namespace Cucr.CucrSaas.App.Service
                 _event.Set();
             }
         }
+
+        // public static object preview()
+        // {
+        // 
+        // client.
+        // }
     }
+
 
 }

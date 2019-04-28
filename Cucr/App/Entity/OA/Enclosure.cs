@@ -6,18 +6,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-namespace Cucr.CucrSaas.App.Entity.OA {
+namespace Cucr.CucrSaas.App.Entity.OA
+{
     /// <summary>
     /// 附件
     /// </summary>
-    [Table ("oa_enclosure")]
-    public class Enclosure {
+    [Table("oa_enclosure")]
+    public class Enclosure
+    {
         /// <summary>
         /// 主键
         /// </summary>
         /// <returns></returns>
         [Key]
-        public string id { get; set; } = Guid.NewGuid ().ToString ();
+        public string id { get; set; } = Guid.NewGuid().ToString();
         /// <summary>
         /// 附件ID
         /// </summary>
@@ -45,5 +47,10 @@ namespace Cucr.CucrSaas.App.Entity.OA {
         /// </summary>
         /// <value></value>
         public string businessname { get; set; }
+        /// <summary>
+        /// 附件大小
+        /// </summary>
+        /// <value></value>
+        public long fileSize { get; set; }
     }
 }
