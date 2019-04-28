@@ -177,8 +177,8 @@ workOrder.title.Contains(input.keyword)
         /// <param name="pageSize"></param>
         /// <param name="status"></param>
         /// <returns></returns>
-        [HttpGet("[action]")]
-        public Rtn<List<WorkOrder>> listWorkOrdersGiveMe(int page = 0, int pageSize = 10, int status = -1)
+        [HttpPost("[action]")]
+        public Rtn<List<WorkOrder>> listWorkOrdersGiveMe([FromForm(Name = "page")] int page = 0, [FromForm(Name = "pageSize")] int pageSize = 10, [FromForm(Name = "status")] int status = -1)
         {
 
             var tokenUser = this.userService.getUserFromAuthcationHeader();
