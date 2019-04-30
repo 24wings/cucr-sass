@@ -9,20 +9,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 
-namespace Cucr.CucrSaas.App.Filters
-{
+namespace Cucr.CucrSaas.App.Filters {
 
     /// <summary>
     /// 获取用户token
     /// </summary>
 
-    public class SingleLoginFilter : IActionFilter
-    {
+    public class SingleLoginFilter : IActionFilter {
         /// <summary>
         /// 白名单
         /// </summary>
         /// /// <value></value>
-        public string[] whiteList = new[] { "appLogin", "Test", "ZC", "Common", "User" };
+        public string[] whiteList = new [] { "appLogin", "Test", "ZC", "Common", "User", "dvo" };
 
         private ICommonService commonService { get; set; }
         private IUserService userService { get; set; }
@@ -37,8 +35,7 @@ namespace Cucr.CucrSaas.App.Filters
         /// <param name="_commonService"></param>
         /// <param name="_userService"></param>
         /// <param name="_sysContext"></param>
-        public SingleLoginFilter(ICommonService _commonService, IUserService _userService, SysContext _sysContext)
-        {
+        public SingleLoginFilter (ICommonService _commonService, IUserService _userService, SysContext _sysContext) {
             this.commonService = _commonService;
             this.userService = _userService;
             this.sysContext = _sysContext;
@@ -47,29 +44,21 @@ namespace Cucr.CucrSaas.App.Filters
         /// 
         /// </summary>
         /// <param name="context"></param>
-        public void OnActionExecuting(ActionExecutingContext context)
-        {
-            var exist = (from url in this.whiteList where context.HttpContext.Request.Path.ToString().Contains(url) select url).Count();
-            if (this.whiteList.Contains(context.HttpContext.Request.Path.ToString()) || exist > 0)
-            {
-                Console.WriteLine("白名单");
-            }
-            else
-            {
+        public void OnActionExecuting (ActionExecutingContext context) {
+            var exist = (from url in this.whiteList where context.HttpContext.Request.Path.ToString ().Contains (url) select url).Count ();
+            if (this.whiteList.Contains (context.HttpContext.Request.Path.ToString ()) || exist > 0) {
+                Console.WriteLine ("白名单");
+            } else {
 
-                Console.WriteLine("===没有找到Authcation请求头值==");
-                var token = this.commonService.getAuthenticationHeader();
-                if (token == "" || token == null)
-                {
-                    context.Result = new JsonResult(new CommonRtn { success = false, message = "用户尚未登陆", code = StatusCode.NotLogin });
-                }
-                else
-                {
-                    var tokenUserCount = (from user in this.sysContext.users where user.token.Contains(token.Substring(0, 20)) select user).Count();
-                    if (tokenUserCount <= 0)
-                    {
-                        Console.WriteLine("===========error======");
-                        context.Result = new JsonResult(new CommonRtn { success = false, message = "你已经在其他设备登录", code = StatusCode.NotLogin });
+                Console.WriteLine ("===没有找到Authcation请求头值==");
+                var token = this.commonService.getAuthenticationHeader ();
+                if (token == "" || token == null) {
+                    context.Result = new JsonResult (new CommonRtn { success = false, message = "用户尚未登陆", code = StatusCode.NotLogin });
+                } else {
+                    var tokenUserCount = (from user in this.sysContext.users where user.token.Contains (token.Substring (0, 20)) select user).Count ();
+                    if (tokenUserCount <= 0) {
+                        Console.WriteLine ("===========error======");
+                        context.Result = new JsonResult (new CommonRtn { success = false, message = "你已经在其他设备登录", code = StatusCode.NotLogin });
                     }
                 }
 
@@ -80,19 +69,17 @@ namespace Cucr.CucrSaas.App.Filters
         ///  执行完成 JSON序列化
         /// </summary>
         /// <param name="context"></param>
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-            if (context.Result is ObjectResult)
-            {
+        public void OnActionExecuted (ActionExecutedContext context) {
+
+            if (context.Result is ObjectResult && context.HttpContext.Request.PathBase.Value.Contains ("api/CucrSaas")) {
                 {
                     var objectResult = context.Result as ObjectResult;
-                    var settings = new JsonSerializerSettings()
-                    {
-                        ContractResolver = new NullToEmptyStringResolver(),
+                    var settings = new JsonSerializerSettings () {
+                        ContractResolver = new NullToEmptyStringResolver (),
                         DateFormatString = "yyyy-MM-dd HH:mm",
                         DefaultValueHandling = DefaultValueHandling.Populate
                     };
-                    context.Result = new JsonResult(objectResult.Value, settings);
+                    context.Result = new JsonResult (objectResult.Value, settings);
 
                 }
 

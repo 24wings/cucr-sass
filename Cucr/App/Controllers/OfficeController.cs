@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -60,6 +61,11 @@ namespace Cucr.CucrSaas.App.Controllers
         /// </summary>
         /// <value></value>
         public IIncardService incardService { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
+        private HttpClient httpClient { get; set; }
 
         /// <summary>
         /// 
